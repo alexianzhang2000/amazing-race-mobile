@@ -110,3 +110,165 @@ footer .back{flex:0 0 auto;background:var(--cream);color:var(--lagoon);box-shado
 .dots i{width:8px;height:8px;border-radius:8px;background:#e5d6b4;transition:width .2s,background .2s}
 .dots i.on{width:22px;background:var(--teal)}
 .fine{margin:10px 22px 0;font-size:12px;text-align:center;color:var(--mute)}
+
+/* ─────────────────────────────
+   JIGSAW PUZZLE
+   ───────────────────────────── */
+
+.jigsaw {
+  margin: 18px -22px -2px;
+  padding: 16px 18px 4px;
+}
+
+.jigsaw-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.jigsaw-head strong {
+  display: block;
+  font: 700 21px/1.2 Fredoka, sans-serif;
+  color: var(--teal);
+}
+
+.jigsaw-head span {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--mute);
+}
+
+.jigsaw-count {
+  flex:none;
+  padding: 6px 10px;
+  border-radius: 99px;
+  background: #f7ecd4;
+  color: var(--teal);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.jigsaw-board {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 3px;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+
+.jpiece {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+
+  /* Prevent mobile tap behaviour */
+  touch-action: manipulation;
+  -webkit-appearance: none;
+
+  background-repeat: no-repeat;
+
+  transition:
+    transform .16s cubic-bezier(.2,1.4,.4,1),
+    filter .16s,
+    box-shadow .16s;
+}
+
+.jpiece:active {
+  transform: scale(.94);
+}
+
+.jpiece.selected {
+  z-index: 3;
+  transform: scale(.94);
+  filter: brightness(1.15);
+  box-shadow:
+    0 0 0 3px var(--mango),
+    0 0 18px rgba(255,176,46,.8);
+}
+
+.jpiece.correct:not(.selected) {
+  filter: saturate(1.03);
+}
+
+.jpiece.completed {
+  cursor: default;
+  border-radius: 0;
+  transition: transform .3s cubic-bezier(.2,1.4,.4,1);
+}
+
+.jigsaw-board.solved .jpiece {
+  animation: puzzleWin .45s cubic-bezier(.2,1.5,.4,1) both;
+}
+
+.jigsaw-board.solved .jpiece:nth-child(2n) {
+  animation-delay: .03s;
+}
+
+.jigsaw-board.solved .jpiece:nth-child(3n) {
+  animation-delay: .06s;
+}
+
+.jigsaw-board.solved .jpiece:nth-child(4n) {
+  animation-delay: .09s;
+}
+
+@keyframes puzzleWin {
+  0% {
+    transform: scale(.92);
+    filter: brightness(1.25);
+  }
+  70% {
+    transform: scale(1.03);
+  }
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+.piece-glow {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,176,46,.28);
+  pointer-events: none;
+  animation: pieceGlow .7s ease-in-out infinite alternate;
+}
+
+@keyframes pieceGlow {
+  from { opacity: .3; }
+  to { opacity: .8; }
+}
+
+.jigsaw-help {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin: 11px 0 0;
+  color: var(--mute);
+  font-size: 13px;
+  text-align: center;
+}
+
+.jigsaw-help span {
+  font-size: 16px;
+}
+
+.jigsaw-reset {
+  display: block;
+  margin: 12px auto 0;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 99px;
+  background: #f7ecd4;
+  color: var(--teal);
+  font: 600 13px Fredoka, sans-serif;
+}

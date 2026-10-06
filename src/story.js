@@ -17,6 +17,7 @@ export const S = [
   { c: 0, t: "Rules:\n1. No talking to strangers (photos only).\n2. Keep this page open on your phone.\n3. Stuck? Tap the menu at the top left to jump to a checkpoint." },
   { c: 1, h: 'Leg 1: Molly Tea', t: "Fuel up first. Your order is waiting at Molly Tea. [EDIT: which branch + how she picks it up]" },
   { c: 1, t: 'Check the cup sleeve or the bag. Your first letter is hiding there.', letter: 'O' },
+  { c: 1, h: 'One more thing...', t: "Before you leave, there's something you need to solve.\nA picture is hiding in 30 pieces. Put it back together to reveal your next clue.", puzzle: 'spot'},
   { c: 2, h: 'Leg 2: Memory Match', t: 'Somewhere nearby, a photo of us is stuck to a pole. [EDIT: location hint]' },
   { c: 2, t: 'Where was the photo taken? [EDIT: question]', ask: { a: ['edit this answer'], hint: '[EDIT: hint]' } },
   { c: 2, t: "Correct! Here's your next letter.", letter: 'C' },

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CHAPTERS, S } from './story.js';
 import gm from './assets/gamemaster.webp';
 import Shop from './Shop.jsx';
+import Jigsaw from './Jigsaw.jsx';
 
 const KEY = 'race-step';
 const ICONS = ['🏁', '🧋', '📸', '🏮', '🏛️', '⌚', '🚉', '🥭'];
@@ -34,7 +35,7 @@ export default function App() {
   const [burst, setBurst] = useState(0);
   const mainRef = useRef(null);
   const s = S[i];
-  const locked = (s.ask || s.photo) && !done[i];
+  const locked = (s.ask || s.photo || s.puzzle) && !done[i];
 
   useEffect(() => {
     try { localStorage.setItem(KEY, i); } catch {}
@@ -114,6 +115,19 @@ export default function App() {
               {s.t.split('\n').map((l, k) => <p key={k}>{l}</p>)}
 
               {s.shop && <Shop />}
+
+              {s.puzzle && (
+                <Jigsaw
+                  solved={!!done[i]}
+                  onComplete={() => {
+                    unlock();
+                    setMsg({ text: 'Puzzle solved! 🧩', kind: 'ok' });
+                    setBurst((b) => b + 1);
+
+                    setTimeout(() => setBurst(0), 1400);
+                  }}
+                />
+              )}
 
               {s.ask && (
                 <div className="extra">
