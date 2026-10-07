@@ -1,25 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { CHAPTERS, S } from './story.js';
 import gm from './assets/gamemaster.webp';
+import spot from './assets/spot.jpg';
 import Shop from './Shop.jsx';
 import Jigsaw from './Jigsaw.jsx';
+import Collage from './Collage.jsx';
+import { shrink } from './util.js';
 
 const KEY = 'race-step';
 const ICONS = ['🏁', '🧋', '📸', '🏮', '🏛️', '⌚', '🚉', '🥭'];
 const COLORS = ['#ffb02e', '#ff6f59', '#7ee0c0', '#fff7e8', '#ffd98a'];
 const letterAt = S.map((s, n) => (s.letter ? n : -1)).filter((n) => n >= 0);
 const firstOf = CHAPTERS.map((_, c) => S.findIndex((s) => s.c === c));
-
-// Resize to ~1600px JPEG so uploads stay small and fast
-async function shrink(file) {
-  const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
-  const k = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
-  const c = document.createElement('canvas');
-  c.width = bmp.width * k;
-  c.height = bmp.height * k;
-  c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
-  return new Promise((r) => c.toBlob(r, 'image/jpeg', 0.85));
-}
 
 export default function App() {
   const [i, setI] = useState(() => {
@@ -35,7 +27,7 @@ export default function App() {
   const [burst, setBurst] = useState(0);
   const mainRef = useRef(null);
   const s = S[i];
-  const locked = (s.ask || s.photo || s.puzzle) && !done[i];
+  const locked = (s.ask || s.photo || s.puzzle || s.collage) && !done[i];
 
   useEffect(() => {
     try { localStorage.setItem(KEY, i); } catch {}
@@ -114,6 +106,8 @@ export default function App() {
               {s.h && <h2>{s.h}</h2>}
               {s.t.split('\n').map((l, k) => <p key={k}>{l}</p>)}
 
+              {s.collage && <Collage onDone={unlock} />}
+
               {s.shop && <Shop />}
 
               {s.puzzle && (
@@ -127,6 +121,16 @@ export default function App() {
                     setTimeout(() => setBurst(0), 1400);
                   }}
                 />
+              )}
+
+              {s.image && (
+                <div className="story-image-wrap">
+                  <img
+                    className="story-image"
+                    src={spot}
+                    alt="Clue location"
+                  />
+                </div>
               )}
 
               {s.ask && (

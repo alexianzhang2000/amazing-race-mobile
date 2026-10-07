@@ -18,13 +18,25 @@ export const S = [
   { c: 1, h: 'Leg 1: Molly Tea', t: "Fuel up first. Your order is waiting at Molly Tea. [EDIT: which branch + how she picks it up]" },
   { c: 1, t: 'Check the cup sleeve or the bag. Your first letter is hiding there.', letter: 'O' },
   { c: 1, h: 'One more thing...', t: "Before you leave, there's something you need to solve.\nA picture is hiding in 30 pieces. Put it back together to reveal your next clue.", puzzle: 'spot'},
-  { c: 2, h: 'Leg 2: Memory Match', t: 'Somewhere nearby, a photo of us is stuck to a pole. [EDIT: location hint]' },
-  { c: 2, t: 'Where was the photo taken? [EDIT: question]', ask: { a: ['edit this answer'], hint: '[EDIT: hint]' } },
+  {
+    c: 2,
+    h: 'You know this place...',
+    t: "Now you know where this photo was taken.\n\nGo there. Somewhere at this location, I've hidden a QR code.\n\nScan it to reveal your question. Come back here and enter your answer on the next page.",
+    image: 'spot',
+  },
+  {
+    c: 2,
+    h: 'What did the QR code ask?',
+    t: "Enter the answer you found at the location.",
+    ask: {
+      a: ['EDIT YOUR ANSWER'],
+      hint: 'Think carefully about the question on the QR code.'
+    }
+  },
   { c: 2, t: "Correct! Here's your next letter.", letter: 'C' },
-  { c: 3, h: 'Leg 3: Chinatown', t: 'Photo challenge! Take a picture of something red, then upload it here.' },
-  { c: 3, t: 'Upload your red thing.', photo: 'chinatown-red' },
+  { c: 3, h: 'Leg 3: Haymarket', t: "Colour challenge! Find 9 red things around Haymarket. Photos only, no talking to strangers." },
+  { c: 3, t: "Tap a panel, snap something red, and watch your colour story build. Nine reds and it's ready to post.", collage: true },
   { c: 3, t: 'Nice eye. Another letter is yours.', letter: 'M' },
-  { c: 3, t: 'Bonus: a selfie in front of a lantern or lucky cat.', photo: 'chinatown-selfie' },
   { c: 4, h: 'Leg 4: Town Hall', t: 'Time for couple trivia. Get it right to earn a letter.' },
   { c: 4, t: '[EDIT: question 1 about us]', ask: { a: ['edit this answer'], hint: '[EDIT: hint]' } },
   { c: 4, t: 'Roadblock: recreate a pose from a photo of us, then upload it.', photo: 'townhall-pose' },

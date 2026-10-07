@@ -159,116 +159,156 @@ footer .back{flex:0 0 auto;background:var(--cream);color:var(--lagoon);box-shado
   width: 100%;
   aspect-ratio: 4 / 5;
 
-.jpiece {
-  position: relative;
-  min-width: 0;
-  min-height: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 4px;
+  .jpiece {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+
+    /* Prevent mobile tap behaviour */
+    touch-action: manipulation;
+    -webkit-appearance: none;
+
+    background-repeat: no-repeat;
+
+    transition:
+      transform .16s cubic-bezier(.2,1.4,.4,1),
+      filter .16s,
+      box-shadow .16s;
+  }
+
+  .jpiece:active {
+    transform: scale(.94);
+  }
+
+  .jpiece.selected {
+    z-index: 3;
+    transform: scale(.94);
+    filter: brightness(1.15);
+    box-shadow:
+      0 0 0 3px var(--mango),
+      0 0 18px rgba(255,176,46,.8);
+  }
+
+  .jpiece.correct:not(.selected) {
+    filter: saturate(1.03);
+  }
+
+  .jpiece.completed {
+    cursor: default;
+    border-radius: 0;
+    transition: transform .3s cubic-bezier(.2,1.4,.4,1);
+  }
+
+  .jigsaw-board.solved .jpiece {
+    animation: puzzleWin .45s cubic-bezier(.2,1.5,.4,1) both;
+  }
+
+  .jigsaw-board.solved .jpiece:nth-child(2n) {
+    animation-delay: .03s;
+  }
+
+  .jigsaw-board.solved .jpiece:nth-child(3n) {
+    animation-delay: .06s;
+  }
+
+  .jigsaw-board.solved .jpiece:nth-child(4n) {
+    animation-delay: .09s;
+  }
+
+  @keyframes puzzleWin {
+    0% {
+      transform: scale(.92);
+      filter: brightness(1.25);
+    }
+    70% {
+      transform: scale(1.03);
+    }
+    100% {
+      transform: scale(1);
+      filter: none;
+    }
+  }
+
+  .piece-glow {
+    position: absolute;
+    inset: 0;
+    background: rgba(255,176,46,.28);
+    pointer-events: none;
+    animation: pieceGlow .7s ease-in-out infinite alternate;
+  }
+
+  @keyframes pieceGlow {
+    from { opacity: .3; }
+    to { opacity: .8; }
+  }
+
+  .jigsaw-help {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    margin: 11px 0 0;
+    color: var(--mute);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .jigsaw-help span {
+    font-size: 16px;
+  }
+
+  .jigsaw-reset {
+    display: block;
+    margin: 12px auto 0;
+    padding: 8px 14px;
+    border: 0;
+    border-radius: 99px;
+    background: #f7ecd4;
+    color: var(--teal);
+    font: 600 13px Fredoka, sans-serif;
+  }
+}
+
+.story-image-wrap {
+  width: 100%;
+  margin: 16px 0 18px;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
-  cursor: pointer;
-
-  /* Prevent mobile tap behaviour */
-  touch-action: manipulation;
-  -webkit-appearance: none;
-
-  background-repeat: no-repeat;
-
-  transition:
-    transform .16s cubic-bezier(.2,1.4,.4,1),
-    filter .16s,
-    box-shadow .16s;
+  border-radius: 18px;
+  border: 3px solid var(--ink);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, .2);
+  animation: card .5s cubic-bezier(.2, 1.4, .4, 1);
 }
 
-.jpiece:active {
-  transform: scale(.94);
-}
-
-.jpiece.selected {
-  z-index: 3;
-  transform: scale(.94);
-  filter: brightness(1.15);
-  box-shadow:
-    0 0 0 3px var(--mango),
-    0 0 18px rgba(255,176,46,.8);
-}
-
-.jpiece.correct:not(.selected) {
-  filter: saturate(1.03);
-}
-
-.jpiece.completed {
-  cursor: default;
-  border-radius: 0;
-  transition: transform .3s cubic-bezier(.2,1.4,.4,1);
-}
-
-.jigsaw-board.solved .jpiece {
-  animation: puzzleWin .45s cubic-bezier(.2,1.5,.4,1) both;
-}
-
-.jigsaw-board.solved .jpiece:nth-child(2n) {
-  animation-delay: .03s;
-}
-
-.jigsaw-board.solved .jpiece:nth-child(3n) {
-  animation-delay: .06s;
-}
-
-.jigsaw-board.solved .jpiece:nth-child(4n) {
-  animation-delay: .09s;
-}
-
-@keyframes puzzleWin {
-  0% {
-    transform: scale(.92);
-    filter: brightness(1.25);
-  }
-  70% {
-    transform: scale(1.03);
-  }
-  100% {
-    transform: scale(1);
-    filter: none;
-  }
-}
-
-.piece-glow {
-  position: absolute;
-  inset: 0;
-  background: rgba(255,176,46,.28);
-  pointer-events: none;
-  animation: pieceGlow .7s ease-in-out infinite alternate;
-}
-
-@keyframes pieceGlow {
-  from { opacity: .3; }
-  to { opacity: .8; }
-}
-
-.jigsaw-help {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  margin: 11px 0 0;
-  color: var(--mute);
-  font-size: 13px;
-  text-align: center;
-}
-
-.jigsaw-help span {
-  font-size: 16px;
-}
-
-.jigsaw-reset {
+.story-image {
   display: block;
-  margin: 12px auto 0;
-  padding: 8px 14px;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  margin: 0;
   border: 0;
-  border-radius: 99px;
-  background: #f7ecd4;
-  color: var(--teal);
-  font: 600 13px Fredoka, sans-serif;
+  border-radius: 0;
 }
+
+/* colour collage */
+.collage{margin-top:14px}
+.cgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ct{position:relative;display:block;width:100%;aspect-ratio:1/1;border-radius:16px;overflow:hidden;background:rgba(224,36,59,.07);border:2px dashed rgba(200,16,46,.4);animation:breathe 2.6s ease-in-out calc(var(--i,0)*.18s) infinite}
+.ct.has{border:0;background:#f1e3c4;animation:pop .5s cubic-bezier(.2,1.5,.4,1);box-shadow:0 5px 12px rgba(120,20,30,.25)}
+.ct img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.ct input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
+.plus{position:absolute;top:50%;left:50%;width:44px;height:44px;margin:-22px 0 0 -22px;display:grid;place-items:center;padding-bottom:3px;border-radius:50%;background:#fff;color:#e0243b;font:400 28px/1 Fredoka,sans-serif;box-shadow:0 3px 0 rgba(200,16,46,.25)}
+@keyframes breathe{50%{background-color:rgba(224,36,59,.15);transform:scale(.97)}}
+@keyframes pop{0%{transform:scale(.6) rotate(-4deg);opacity:0}}
+.cmeta{margin:12px 0 0;font-size:15px;color:var(--mute);text-align:center}
+.final{display:block;width:64%;margin:16px auto 0;border-radius:18px;box-shadow:0 10px 24px rgba(0,0,0,.3);animation:card .5s cubic-bezier(.2,1.4,.4,1)}
+.btn.go{background:var(--mango);color:var(--ink);box-shadow:0 5px 0 var(--mango-d)}
+.btn.go:active{box-shadow:0 1px 0 var(--mango-d)}
+.csave{display:block;width:100%;margin-top:16px}
+
