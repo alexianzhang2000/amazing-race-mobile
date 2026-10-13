@@ -2,13 +2,16 @@ import { useEffect, useRef, useState } from 'react';
 import { CHAPTERS, S } from './story.js';
 import gm from './assets/gamemaster.webp';
 import spot from './assets/spot.jpg';
+import busClue from './assets/b-line.webp';
 import Shop from './Shop.jsx';
 import Jigsaw from './Jigsaw.jsx';
 import Collage from './Collage.jsx';
+import Booth from './Booth.jsx';
+import Karaoke from './Karaoke.jsx';
 import { shrink } from './util.js';
 
 const KEY = 'race-step';
-const ICONS = ['🏁', '🧋', '📸', '🏮', '🏛️', '⌚', '🚉', '🥭'];
+const ICONS = ['🏁', '🧋', '📸', '🏮', '🏛️', '🎤', '⌚', '🚉', '🥭'];
 const COLORS = ['#ffb02e', '#ff6f59', '#7ee0c0', '#fff7e8', '#ffd98a'];
 const letterAt = S.map((s, n) => (s.letter ? n : -1)).filter((n) => n >= 0);
 const firstOf = CHAPTERS.map((_, c) => S.findIndex((s) => s.c === c));
@@ -27,7 +30,7 @@ export default function App() {
   const [burst, setBurst] = useState(0);
   const mainRef = useRef(null);
   const s = S[i];
-  const locked = (s.ask || s.photo || s.puzzle || s.collage) && !done[i];
+  const locked = (s.ask || s.photo || s.collage || s.karaoke) && !done[i];
 
   useEffect(() => {
     try { localStorage.setItem(KEY, i); } catch {}
@@ -108,6 +111,10 @@ export default function App() {
 
               {s.collage && <Collage onDone={unlock} />}
 
+              {s.booth && <Booth />}
+
+              {s.karaoke && <Karaoke done={!!done[i]} onDone={unlock} />}
+
               {s.shop && <Shop />}
 
               {s.puzzle && (
@@ -127,8 +134,12 @@ export default function App() {
                 <div className="story-image-wrap">
                   <img
                     className="story-image"
-                    src={spot}
-                    alt="Clue location"
+                    src={s.image === 'bus-clue' ? busClue : spot}
+                    alt={
+                      s.image === 'bus-clue'
+                        ? 'Double-decker bus clue'
+                        : 'Clue location'
+                    }
                   />
                 </div>
               )}

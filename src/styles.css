@@ -85,7 +85,7 @@ footer .back{flex:0 0 auto;background:var(--cream);color:var(--lagoon);box-shado
 @media (max-height:720px){.gm img{height:100px}.chap{margin-bottom:24px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 
-/* watch carousel */
+/* watch carousel
 .shop{margin:18px -22px 0}
 .track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 22px 14px;scroll-padding:0 22px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .track::-webkit-scrollbar{display:none}
@@ -109,7 +109,473 @@ footer .back{flex:0 0 auto;background:var(--cream);color:var(--lagoon);box-shado
 .dots{display:flex;gap:6px;justify-content:center}
 .dots i{width:8px;height:8px;border-radius:8px;background:#e5d6b4;transition:width .2s,background .2s}
 .dots i.on{width:22px;background:var(--teal)}
-.fine{margin:10px 22px 0;font-size:12px;text-align:center;color:var(--mute)}
+.fine{margin:10px 22px 0;font-size:12px;text-align:center;color:var(--mute)} */
+
+/* Clean, Apple-inspired product presentation */
+.garmin-shop {
+  --shop-ink: #172629;
+  --shop-muted: #687579;
+  --shop-line: #e4e8e7;
+  color: var(--shop-ink);
+  margin: 20px -4px 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.shop-intro {
+  text-align: center;
+  padding: 4px 4px 20px;
+}
+
+.shop-intro > span {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #687579;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .16em;
+}
+
+.shop-intro h2 {
+  margin: 0 auto 9px;
+  max-width: 360px;
+  color: #14282b;
+  font: 700 clamp(28px, 7vw, 38px)/1.03 -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: -.055em;
+}
+
+.shop-intro p {
+  max-width: 290px;
+  margin: 0 auto;
+  color: var(--shop-muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Model selector */
+.shop-model-nav {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  margin-bottom: 14px;
+  padding: 5px;
+  border: 1px solid var(--shop-line);
+  border-radius: 15px;
+  background: #f1f3f2;
+}
+
+.shop-model-nav button {
+  display: flex;
+  min-width: 0;
+  min-height: 58px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px 3px;
+  border: 1px solid transparent;
+  border-radius: 11px;
+  background: transparent;
+  color: #536064;
+  font: 600 11px/1.15 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.shop-model-nav button small {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  opacity: .7;
+}
+
+.shop-model-nav button.active {
+  border-color: #e5e8e7;
+  background: white;
+  color: #14282b;
+  box-shadow: 0 2px 6px #13292b0b;
+}
+
+/* Product cards */
+.shop-products {
+  display: grid;
+  gap: 15px;
+}
+
+.shop-product {
+  overflow: hidden;
+  border: 1px solid #e3e8e6;
+  border-radius: 22px;
+  background: white;
+  box-shadow: 0 8px 24px #162c2d0b;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.shop-product.is-selected {
+  border-color: #83b9ae;
+  box-shadow: 0 8px 28px #0e55601a;
+}
+
+.shop-eyebrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 17px 17px 0;
+  color: #6a777a;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .13em;
+}
+
+.shop-eyebrow b {
+  flex: none;
+  padding: 5px 8px;
+  border-radius: 99px;
+  background: #e8f5ef;
+  color: #246958;
+  font-size: 9px;
+  letter-spacing: 0;
+}
+
+/* Product hero */
+.shop-hero {
+  display: flex;
+  align-items: center;
+  min-height: 185px;
+  padding: 8px 10px 8px 18px;
+  background: radial-gradient(
+    ellipse at 75% 45%,
+    #eaf0ed 0,
+    #f8f9f8 47%,
+    white 78%
+  );
+}
+
+.shop-hero-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.shop-hero-copy h3 {
+  margin: 0 0 8px;
+  color: #152629;
+  font: 700 clamp(25px, 6vw, 32px)/1.05 -apple-system,
+    BlinkMacSystemFont, "Segoe UI", sans-serif;
+  letter-spacing: -.055em;
+}
+
+.shop-hero-copy p {
+  max-width: 180px;
+  margin: 0 0 13px;
+  color: #647276;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.shop-hero-copy > strong {
+  color: #152629;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.shop-watch-art {
+  display: block;
+  flex: 0 0 43%;
+  width: 43%;
+  max-width: 155px;
+  height: auto;
+  overflow: visible;
+}
+
+/* Colour selection */
+.shop-colors {
+  padding: 14px 17px 16px;
+  border-top: 1px solid #edf0ef;
+}
+
+.shop-color-heading {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 11px;
+}
+
+.shop-color-heading span {
+  color: var(--shop-muted);
+  font-size: 12px;
+}
+
+.shop-color-heading strong {
+  color: #253538;
+  font-size: 12px;
+}
+
+.shop-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 11px;
+}
+
+.shop-swatches button {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 3px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.shop-swatches button > span {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #0001;
+  border-radius: 50%;
+  background: var(--swatch);
+  box-shadow: inset -4px -3px 0 var(--bezel);
+}
+
+.shop-swatches button.active {
+  border-color: #233638;
+}
+
+/* At-a-glance specs */
+.shop-specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 2px 17px 7px;
+  background: #f7f8f7;
+  border-top: 1px solid #edf0ef;
+  border-bottom: 1px solid #edf0ef;
+}
+
+.shop-specs > div {
+  min-width: 0;
+  padding: 12px 8px 10px 0;
+}
+
+.shop-specs .shop-build {
+  grid-column: 1 / -1;
+  border-top: 1px solid #e7ebea;
+}
+
+.shop-specs span {
+  display: block;
+  margin-bottom: 5px;
+  color: #7b8789;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.shop-specs b {
+  display: block;
+  color: #26383b;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.shop-specs .shop-build p {
+  margin: 6px 0 0;
+  color: #667477;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Feature summaries */
+.shop-features {
+  display: grid;
+  grid-template-columns: 1fr;
+  padding: 2px 17px 4px;
+}
+
+.shop-feature {
+  padding: 13px 0;
+  border-bottom: 1px solid #edf0ef;
+}
+
+.shop-feature:last-child {
+  border-bottom: 0;
+}
+
+.shop-feature > strong {
+  display: block;
+  margin-bottom: 5px;
+  color: #26383b;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.shop-feature p {
+  margin: 0;
+  color: #667477;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.55;
+}
+
+/* Expandable pros and cons */
+.shop-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 17px;
+  border: 0;
+  border-top: 1px solid #edf0ef;
+  background: #f8f9f8;
+  color: #1c4143;
+  text-align: left;
+  font: 650 13px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+}
+
+.shop-toggle span:last-child {
+  font-size: 20px;
+  transition: transform .18s;
+}
+
+.shop-toggle span.up {
+  transform: rotate(180deg);
+}
+
+.shop-expanded {
+  padding: 0 17px 15px;
+  background: #f8f9f8;
+}
+
+.shop-expanded .shop-feature {
+  padding-top: 3px;
+}
+
+.shop-procon {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  padding: 5px 0 12px;
+}
+
+.shop-procon > div {
+  padding: 12px;
+  border: 1px solid #e4e9e7;
+  border-radius: 13px;
+  background: white;
+}
+
+.shop-procon h4 {
+  margin: 0 0 8px;
+  color: #293b3e;
+  font-size: 12px;
+}
+
+.shop-procon ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 16px;
+  color: #667477;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.shop-fit {
+  padding: 12px;
+  border-radius: 13px;
+  background: #eaf4f0;
+}
+
+.shop-fit b {
+  display: block;
+  margin-bottom: 4px;
+  color: #21564d;
+  font-size: 12px;
+}
+
+.shop-fit p {
+  margin: 0;
+  color: #46645f;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* Select a birthday gift */
+.shop-choose {
+  display: block;
+  width: calc(100% - 34px);
+  margin: 15px 17px 0;
+  padding: 13px 15px;
+  border: 0;
+  border-radius: 999px;
+  background: #142e32;
+  color: white;
+  font: 650 13px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  cursor: pointer;
+  transition: background .18s, transform .18s;
+}
+
+.shop-choose:active {
+  transform: scale(.985);
+}
+
+.shop-choose.chosen {
+  background: #286d5e;
+}
+
+.shop-price-note {
+  margin: 8px 17px 16px;
+  color: #8a9495;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.shop-disclaimer {
+  margin: 13px 4px 0;
+  color: #879193;
+  font-size: 10px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.watch-product-image {
+  display: block;
+  width: 100%;
+  max-width: 270px;
+  height: 235px;
+  object-fit: contain;
+  margin: 0 auto 16px;
+  transition: opacity 0.2s ease;
+}
+
+@media (min-width: 540px) {
+  .shop-features {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 18px;
+  }
+
+  .shop-features .shop-feature:last-child {
+    grid-column: 1 / -1;
+  }
+
+  .shop-procon {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shop-product,
+  .shop-swatches button,
+  .shop-choose,
+  .shop-toggle span:last-child {
+    transition: none;
+  }
+}
+
 
 /* ─────────────────────────────
    JIGSAW PUZZLE
@@ -312,3 +778,41 @@ footer .back{flex:0 0 auto;background:var(--cream);color:var(--lagoon);box-shado
 .btn.go:active{box-shadow:0 1px 0 var(--mango-d)}
 .csave{display:block;width:100%;margin-top:16px}
 
+/* collage themes */
+.themes{display:flex;gap:8px;overflow-x:auto;margin:10px -22px 0;padding:2px 22px 8px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.themes::-webkit-scrollbar{display:none}
+.tchip{flex:none;display:flex;align-items:center;gap:8px;font:inherit;font-size:15px;font-weight:600;padding:8px 14px 8px 8px;border:2px solid #f1e3c4;border-radius:99px;background:#fff;color:var(--ink);transition:transform .15s,border-color .15s}
+.tchip.on{border-color:var(--mango);background:var(--cream);transform:translateY(-2px)}
+.tchip .dots{display:flex}
+.tchip .dots i{width:18px;height:18px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.tchip .dots i+i{margin-left:-6px}
+.final{transition:opacity .2s}
+.final.dim{opacity:.5}
+
+/* photobooth pose deck (reuses .shop / .track / .dots from the watch carousel) */
+.pose{flex:0 0 78%;scroll-snap-align:start;border-radius:22px;padding:12px 14px 18px;text-align:center;background:linear-gradient(160deg,#ffe6b0,#ffc65c);color:var(--ink);box-shadow:0 6px 0 rgba(0,0,0,.2)}
+.pnum{margin-bottom:8px;font:600 13px Fredoka,sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.7}
+.pimg{aspect-ratio:4/5;display:grid;place-items:center;overflow:hidden;border-radius:16px;background:#fff}
+.pimg img{display:block;max-width:100%;max-height:100%;object-fit:contain}
+.pt{margin-top:12px;font:700 21px/1.2 Fredoka,sans-serif}
+.pd{margin-top:4px;font-size:15px;opacity:.85}
+.shuf{display:block;width:calc(100% - 44px);margin:6px 22px 0;background:var(--mango);color:var(--ink);box-shadow:0 5px 0 var(--mango-d)}
+.shuf:active{box-shadow:0 1px 0 var(--mango-d)}
+
+/* karaoke setlist */
+.setlist{display:grid;gap:10px;margin-top:16px}
+.song{display:flex;align-items:center;gap:14px;width:100%;text-align:left;font:inherit;color:var(--cream);background:linear-gradient(135deg,#0e5560,#0a3540);border:0;border-radius:20px;padding:12px 14px;box-shadow:0 5px 0 rgba(0,0,0,.25);transition:transform .15s,box-shadow .15s,background .3s,color .3s}
+.song:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.sicon{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:rgba(255,247,232,.14);font-size:22px;transition:background .3s}
+.sbody{display:flex;flex-direction:column;min-width:0}
+.sbody em{font:600 11.5px Fredoka,sans-serif;font-style:normal;letter-spacing:.1em;text-transform:uppercase;color:var(--mango)}
+.sbody b{font:700 19px/1.2 Fredoka,sans-serif}
+.sbody small{font-size:14px;opacity:.8}
+.song.sung{background:var(--mango);color:var(--ink);animation:songpop .4s cubic-bezier(.2,1.5,.4,1)}
+.song.sung .sicon{background:var(--ink);color:var(--mango);font-weight:700}
+.song.sung em{color:var(--ink);opacity:.7}
+.song.bonus:not(.sung){background:transparent;color:var(--ink);border:2px dashed var(--teal);box-shadow:none}
+.song.bonus:not(.sung) .sicon{background:#f7ecd4}
+.song.bonus:not(.sung) em{color:var(--coral)}
+.snote{margin:4px 0 0;font-size:15px;color:var(--mute);text-align:center}
+@keyframes songpop{0%{transform:scale(.94)}60%{transform:scale(1.03)}}

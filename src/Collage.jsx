@@ -4,7 +4,30 @@ import { NAME } from './story.js';
 
 const COUNT = 9;                       // 3x3 grid, one photo per panel
 let cache = Array(COUNT).fill(null);   // keeps photos if she navigates away and back
+let themeCache = 0; // remembers her chosen style if she navigates away and back
 
+// hdr = header text colour, ink = caption/wordmark colour, card = optional panel behind the grid,
+// r = tile corner radius, bw/bc = tile border width/colour, sh = [colour, blur, offsetY, offsetX]
+const THEMES = [
+  { id: 'booth', name: 'Photo Booth', dots: ['#b3151f', '#f4ece0'],
+    bg: ['#b3151f', '#8f0f18'], blobs: [], hdr: '#f4ece0', ink: '#b3151f',
+    card: '#f4ece0', word: 'RED ROOM', r: 12, bw: 0, bc: '#f4ece0', sh: null },
+  { id: 'blush', name: 'Blush', dots: ['#fff7e8', '#ff6f59'],
+    bg: ['#fff7e8', '#ffdcd0'], hdr: '#c8102e', ink: '#10282c', card: null, r: 40, bw: 8, bc: '#ffffff',
+    sh: ['rgba(120,20,30,.28)', 30, 12, 0],
+    blobs: [[980, 150, 320, '255,111,89,.22'], [60, 1790, 360, '255,176,46,.26'], [1020, 1480, 200, '126,224,192,.25']] },
+  { id: 'ruby', name: 'Midnight Ruby', dots: ['#1a070c', '#ff3b4f'],
+    bg: ['#1a070c', '#3a0a14'], hdr: '#ff6b7a', ink: '#ffe3e3', card: null, r: 36, bw: 5, bc: '#ff3b4f',
+    sh: ['rgba(255,59,79,.55)', 36, 0, 0],
+    blobs: [[900, 200, 380, '255,59,79,.2'], [100, 1700, 420, '255,59,79,.16']] },
+  { id: 'mango', name: 'Mango Sunset', dots: ['#e0243b', '#ff9f43'],
+    bg: ['#e0243b', '#ff6f59', '#ff9f43'], hdr: '#fff7e8', ink: '#3d0710', card: null, r: 40, bw: 8, bc: '#fff7e8',
+    sh: ['rgba(90,10,20,.35)', 30, 12, 0],
+    blobs: [[950, 1500, 300, '255,247,232,.18'], [80, 250, 240, '255,247,232,.14']] },
+  { id: 'pop', name: 'Pop Poster', dots: ['#d7132a', '#fff3df'],
+    bg: ['#d7132a'], hdr: '#fff3df', ink: '#fff3df', card: null, r: 6, bw: 12, bc: '#fff3df',
+    sh: ['#5c0710', 0, 14, 14], blobs: [] },
+];
 const load = (src) => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = rej; im.src = src; });
 
 // Most vivid colour in the photo (weights pixels by saturation)
@@ -32,36 +55,46 @@ function cover(x, im, a, b, w, h) {
   x.drawImage(im, a + (w - dw) / 2, b + (h - dh) / 2, dw, dh);
 }
 
-async function render(tiles) {
+async function render(tiles, th) {
   try { await document.fonts.load('700 100px Fredoka'); } catch {}
   const imgs = await Promise.all(tiles.map((t) => load(t.url)));
   const c = document.createElement('canvas'); c.width = W; c.height = H;
   const x = c.getContext('2d'); const F = 'Fredoka, sans-serif';
+  const pw = 3 * T + 2 * G, gridBottom = TOP + pw;
 
-  const bg = x.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#fff7e8'); bg.addColorStop(1, '#ffdcd0');
+  const bg = x.createLinearGradient(0, 0, 0, H);
+  th.bg.forEach((col, n) => bg.addColorStop(n / Math.max(th.bg.length - 1, 1), col));
   x.fillStyle = bg; x.fillRect(0, 0, W, H);
-  [[980, 150, 320, '255,111,89,.22'], [60, 1790, 360, '255,176,46,.26'], [1020, 1480, 200, '126,224,192,.25']]
-    .forEach(([a, b, r, col]) => { x.fillStyle = `rgba(${col})`; x.beginPath(); x.arc(a, b, r, 0, 6.283); x.fill(); });
+  th.blobs.forEach(([a, b, r, col]) => { x.fillStyle = `rgba(${col})`; x.beginPath(); x.arc(a, b, r, 0, 6.283); x.fill(); });
 
   x.textAlign = 'center';
-  x.fillStyle = '#c8102e'; x.font = `600 34px ${F}`; if ('letterSpacing' in x) x.letterSpacing = '10px';
-  x.fillText('HAYMARKET · SYDNEY', W / 2, 385);
+  x.fillStyle = th.hdr; x.font = `600 34px ${F}`; if ('letterSpacing' in x) x.letterSpacing = '10px';
+  x.fillText('HAYMARKET · SYDNEY', W / 2, TOP - 70);
   if ('letterSpacing' in x) x.letterSpacing = '0px';
+
+  if (th.card) { rr(x, L - 40, TOP - 40, pw + 80, pw + 230, 44); x.fillStyle = th.card; x.fill(); }
 
   tiles.forEach((_, k) => {                         // 9 equal panels
     const [a, b] = xy(k);
-    x.save(); x.shadowColor = 'rgba(120,20,30,.28)'; x.shadowBlur = 30; x.shadowOffsetY = 12;
-    rr(x, a, b, T, T, 40); x.fillStyle = '#fff'; x.fill(); x.restore();
-    x.save(); rr(x, a, b, T, T, 40); x.clip(); cover(x, imgs[k], a, b, T, T); x.restore();
-    rr(x, a + 4, b + 4, T - 8, T - 8, 36); x.lineWidth = 8; x.strokeStyle = '#fff'; x.stroke();
+    x.save();
+    if (th.sh) { x.shadowColor = th.sh[0]; x.shadowBlur = th.sh[1]; x.shadowOffsetY = th.sh[2]; x.shadowOffsetX = th.sh[3]; }
+    rr(x, a, b, T, T, th.r); x.fillStyle = th.bc; x.fill(); x.restore();
+    x.save(); rr(x, a, b, T, T, th.r); x.clip(); cover(x, imgs[k], a, b, T, T); x.restore();
+    if (th.bw) { rr(x, a + th.bw / 2, b + th.bw / 2, T - th.bw, T - th.bw, Math.max(th.r - th.bw / 2, 0)); x.lineWidth = th.bw; x.strokeStyle = th.bc; x.stroke(); }
   });
 
-  const pw = 3 * T + 2 * G, py = TOP + 3 * T + 2 * G + 52;   // colour sheet under the grid
-  x.save(); rr(x, L, py, pw, 48, 24); x.clip();
+  const caption = `a colour story by ${NAME} · ${new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}`;
+  let py;
+  if (th.card) {                                    // wordmark + caption sit inside the card
+    x.fillStyle = th.ink; x.font = `700 62px ${F}`; x.fillText(th.word, W / 2, gridBottom + 95);
+    x.font = `500 30px ${F}`; x.fillText(caption, W / 2, gridBottom + 150);
+    py = TOP - 40 + pw + 230 + 40;
+  } else py = gridBottom + 52;
+
+  x.save(); rr(x, L, py, pw, 48, 24); x.clip();     // colour sheet
   tiles.forEach((t, k) => { x.fillStyle = t.color; x.fillRect(L + (k * pw) / COUNT, py, pw / COUNT + 1, 48); }); x.restore();
 
-  x.fillStyle = '#10282c'; x.font = `500 38px ${F}`;
-  x.fillText(`a colour story by ${NAME} · ${new Date().toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' })}`, W / 2, py + 138);
+  if (!th.card) { x.fillStyle = th.ink; x.font = `500 38px ${F}`; x.fillText(caption, W / 2, py + 138); }
 
   const blob = await new Promise((r) => c.toBlob(r, 'image/png'));
   return { blob, url: URL.createObjectURL(blob) };
@@ -71,14 +104,16 @@ export default function Collage({ onDone }) {
   const [tiles, setTiles] = useState(cache);
   const [out, setOut] = useState(null);
   const [err, setErr] = useState('');
+  const [theme, setTheme] = useState(themeCache);
+  const [making, setMaking] = useState(false);
   const count = tiles.filter(Boolean).length, all = count === COUNT;
 
   useEffect(() => {
     if (!all) { setOut(null); return; }
-    let live = true;
-    render(tiles).then((o) => { if (live) { setOut(o); onDone(); } });
+    let live = true; setMaking(true);
+    render(tiles, THEMES[theme]).then((o) => { if (live) { setOut(o); setMaking(false); onDone(); } });
     return () => { live = false; };
-  }, [tiles]);
+  }, [tiles, theme]);
 
   async function pick(k, file) {
     if (!file) return;
@@ -100,6 +135,8 @@ export default function Collage({ onDone }) {
     const a = document.createElement('a'); a.href = out.url; a.download = 'colour-story.png'; a.click();
   }
 
+  function choose(n) { themeCache = n; setTheme(n); }
+
   return (
     <div className="collage">
       <div className="cgrid">
@@ -114,7 +151,15 @@ export default function Collage({ onDone }) {
       <p className="cmeta">{err || (all ? (out ? 'Your story is ready!' : 'Making your story...') : `${count}/${COUNT} found. Tap a panel to add a photo.`)}</p>
       {out && (
         <>
-          <img className="final" src={out.url} alt="Your colour story" />
+          <p className="cmeta">Pick a style</p>
+          <div className="themes" role="radiogroup" aria-label="Collage style">
+            {THEMES.map((t, n) => (
+              <button key={t.id} role="radio" aria-checked={n === theme} className={'tchip' + (n === theme ? ' on' : '')} onClick={() => choose(n)}>
+                <span className="dots"><i style={{ background: t.dots[0] }} /><i style={{ background: t.dots[1] }} /></span>{t.name}
+              </button>
+            ))}
+          </div>
+          <img className={'final' + (making ? ' dim' : '')} src={out.url} alt="Your colour story" />
           <button className="btn go csave" onClick={save}>Save / share to Instagram</button>
           <p className="cmeta">Or long-press the picture to save it.</p>
         </>
