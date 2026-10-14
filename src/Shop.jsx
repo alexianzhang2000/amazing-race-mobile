@@ -1,29 +1,33 @@
-
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 const WATCHES = [
   {
     id: 'vivoactive5',
+    short: 'vívoactive 5',
+    role: 'Everyday',
     name: 'vívoactive 5',
-    eyebrow: 'THE EVERYDAY ALL-ROUNDER',
+    eyebrow: 'The everyday all-rounder',
     tagline: 'A little bit of everything, done well.',
     price: 'Around A$300',
     colors: [
       {
         name: 'Black / Slate',
+        strap: '#2c3339', bezel: '#15191c', screen: '#0b0d10', accent: '#7ad0ff',
         image: 'https://res.garmin.com/en/products/010-02862-10/v/cf-lg.jpg',
-        // Keep your existing colour properties here
       },
       {
         name: 'Ivory / Cream Gold',
+        strap: '#efe7d6', bezel: '#c9a96a', screen: '#0b0d10', accent: '#c9a96a',
         image: 'https://res.garmin.com/en/products/010-02862-11/v/cf-lg.jpg',
       },
       {
         name: 'Navy / Metallic Navy',
+        strap: '#1d3b66', bezel: '#5b7ca8', screen: '#0b0d10', accent: '#ffbf34',
         image: 'https://res.garmin.com/en/products/010-02862-12/v/cf-lg.jpg',
       },
       {
         name: 'Orchid / Metallic Orchid',
+        strap: '#b178b4', bezel: '#7e4a84', screen: '#0b0d10', accent: '#ffd1f0',
         image: 'https://res.garmin.com/en/products/010-02862-13/v/cf-lg.jpg',
       },
     ],
@@ -50,17 +54,21 @@ const WATCHES = [
   },
   {
     id: 'forerunner165',
+    short: 'Forerunner',
+    role: 'Runner',
     name: 'Forerunner 165',
-    eyebrow: 'THE RUNNER',
+    eyebrow: 'The runner',
     tagline: 'For chasing your next personal best.',
     price: 'Around A$400',
     colors: [
       {
         name: 'Black / Slate Grey',
+        strap: '#262a2e', bezel: '#6b7580', screen: '#0b0d10', accent: '#93b21f',
         image: 'https://res.garmin.com/en/products/010-02863-20/v/cf-lg.jpg',
       },
       {
         name: 'Mist Grey / Whitestone',
+        strap: '#cdd1d6', bezel: '#a7adb4', screen: '#0b0d10', accent: '#ff7a5c',
         image: 'https://res.garmin.com/en/products/010-02863-21/v/cf-lg.jpg',
       },
     ],
@@ -87,17 +95,21 @@ const WATCHES = [
   },
   {
     id: 'lily2',
+    short: 'Lily 2',
+    role: 'Style',
     name: 'Lily 2',
-    eyebrow: 'THE STYLE PICK',
+    eyebrow: 'The style pick',
     tagline: 'Small, subtle and made to accessorise.',
     price: 'Around A$400–450',
     colors: [
       {
         name: 'Cream Gold / Coconut',
+        strap: '#efe3c2', bezel: '#cfae6a', screen: '#0b0d10', accent: '#c9a96a',
         image: 'https://res.garmin.com/en/products/010-02839-00/v/cf-lg.jpg',
       },
       {
         name: 'Metallic Lilac / Lilac',
+        strap: '#bba9dc', bezel: '#9a86c4', screen: '#0b0d10', accent: '#ffffff',
         image: 'https://res.garmin.com/en/products/010-02839-01/v/cf-lg.jpg',
       },
     ],
@@ -124,203 +136,145 @@ const WATCHES = [
   },
 ];
 
+// Fallback drawing if a product photo fails to load (weak signal)
 function WatchArt({ color }) {
   return (
-    <svg
-      className="shop-watch-art"
-      viewBox="0 0 180 230"
-      role="img"
-      aria-label={`Watch colour illustration: ${color.name}`}
-    >
-      <defs>
-        <linearGradient id={`glass-${color.name.replace(/[^a-z0-9]/gi, '')}`}
-          x1="0" y1="0" x2="1" y2="1">
-          <stop stopColor="#fff" stopOpacity=".2" />
-          <stop offset="1" stopColor="#000" stopOpacity=".2" />
-        </linearGradient>
-      </defs>
-      <path
-        d="M66 5 Q90 -3 114 5 L120 62 L60 62 Z M60 172 L120 172 L114 225 Q90 233 66 225 Z"
-        fill={color.strap}
-      />
+    <svg className="gs-art" viewBox="0 0 180 230" role="img" aria-label={`${color.name} watch`}>
+      <path d="M66 5 Q90 -3 114 5 L120 62 L60 62 Z M60 172 L120 172 L114 225 Q90 233 66 225 Z" fill={color.strap} />
       <rect x="51" y="53" width="78" height="122" rx="24" fill={color.bezel} />
       <rect x="57" y="59" width="66" height="110" rx="19" fill={color.screen} />
-      <circle
-        cx="90" cy="114" r="29" fill="none"
-        stroke={color.accent} strokeWidth="4"
-        strokeDasharray="130 60" transform="rotate(-90 90 114)"
-        strokeLinecap="round"
-      />
-      <circle cx="90" cy="114" r="21" fill="none" stroke="#fff" strokeOpacity=".25" strokeWidth="2" />
+      <circle cx="90" cy="114" r="29" fill="none" stroke={color.accent} strokeWidth="4"
+        strokeDasharray="130 60" transform="rotate(-90 90 114)" strokeLinecap="round" />
       <path d="M90 99 V114 L102 123" stroke="#fff" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-      <rect x="128" y="99" width="6" height="18" rx="3" fill={color.bezel} />
     </svg>
   );
 }
 
-function Feature({ title, children }) {
+function Detail({ title, children }) {
   return (
-    <div className="shop-feature">
-      <strong>{title}</strong>
+    <div className="gs-detail">
+      <h4>{title}</h4>
       <p>{children}</p>
     </div>
   );
 }
 
-function WatchCard({ watch, selected, onSelect }) {
-  const [colorIndex, setColorIndex] = useState(0);
-  const [expanded, setExpanded] = useState(false);
-  const color = watch.colors[colorIndex];
+function WatchCard({ watch, active, picked, onPick }) {
+  const [ci, setCi] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [broken, setBroken] = useState({});
+  const color = watch.colors[ci];
 
   return (
-    <article className={`shop-product ${selected ? 'is-selected' : ''}`}>
-      <div className="shop-eyebrow">
-        <span>{watch.eyebrow}</span>
-        {selected && <b>Birthday pick</b>}
+    <article className={'gs-card' + (active ? ' on' : '') + (picked ? ' picked' : '')}>
+      <div className="gs-stage">
+        <span className="gs-tag">{watch.eyebrow}</span>
+        {picked && <b className="gs-pick">Birthday pick</b>}
+        {broken[color.image]
+          ? <WatchArt color={color} />
+          : <img key={color.image} src={color.image} alt={`${watch.name} in ${color.name}`} loading="lazy"
+              onError={() => setBroken((b) => ({ ...b, [color.image]: true }))} />}
       </div>
 
-      <div className="shop-hero">
-        <div className="shop-hero-copy">
+      <div className="gs-body">
+        <div className="gs-head">
           <h3>{watch.name}</h3>
-          <p>{watch.tagline}</p>
-          <strong>{watch.price}</strong>
+          <span className="gs-price">{watch.price}</span>
         </div>
-        <img
-          className="watch-product-image"
-          src={color.image}
-          alt={`${watch.name} in ${color.name}`}
-          loading="lazy"
-        />
-      </div>
+        <p className="gs-tagline">{watch.tagline}</p>
 
-      <div className="shop-colors">
-        <div className="shop-color-heading">
-          <span>Choose a finish</span>
-          <strong>{color.name}</strong>
-        </div>
-        <div className="shop-swatches" role="group" aria-label={`${watch.name} colours`}>
-          {watch.colors.map((c, index) => (
-            <button
-              key={c.name}
-              type="button"
-              className={index === colorIndex ? 'active' : ''}
-              style={{ '--swatch': c.strap, '--bezel': c.bezel }}
-              onClick={() => setColorIndex(index)}
-              aria-label={`Select ${c.name}`}
-              aria-pressed={index === colorIndex}
-              title={c.name}
-            >
-              <span />
-            </button>
+        <div className="gs-colors" role="group" aria-label={`${watch.name} finishes`}>
+          {watch.colors.map((c, n) => (
+            <button key={c.name} type="button" className={n === ci ? 'on' : ''}
+              style={{ '--strap': c.strap, '--bezel': c.bezel }}
+              aria-label={c.name} aria-pressed={n === ci} onClick={() => setCi(n)} />
           ))}
+          <span className="gs-colorname">{color.name}</span>
         </div>
-      </div>
 
-      <div className="shop-specs">
-        <div>
-          <span>DISPLAY</span>
-          <b>{watch.display}</b>
+        <div className="gs-specs">
+          <div><small>Display</small><b>{watch.display}</b></div>
+          <div><small>Battery</small><b>{watch.battery}</b></div>
+          <div className="wide"><small>Build</small><b>{watch.build}</b></div>
         </div>
-        <div>
-          <span>BATTERY</span>
-          <b>{watch.battery}</b>
-        </div>
-        <div className="shop-build">
-          <span>BUILD & DURABILITY</span>
-          <b>{watch.build}</b>
-          <p>{watch.durability}</p>
-        </div>
-      </div>
 
-      <div className="shop-features">
-        <Feature title="Everyday features">{watch.everyday}</Feature>
-        <Feature title="Fitness features">{watch.fitness}</Feature>
-        <Feature title="What people say">{watch.review}</Feature>
-      </div>
+        <button type="button" className="gs-more" onClick={() => setOpen((v) => !v)} aria-expanded={open}>
+          <span>{open ? 'Hide details' : 'Features, pros & cons'}</span>
+          <span className={'gs-chev' + (open ? ' up' : '')} aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 9l6 6 6-6" /></svg>
+          </span>
+        </button>
 
-      <button
-        type="button"
-        className="shop-toggle"
-        onClick={() => setExpanded(value => !value)}
-        aria-expanded={expanded}
-      >
-        <span>{expanded ? 'Hide the details' : 'UI, pros & cons'}</span>
-        <span className={expanded ? 'up' : ''}>⌄</span>
-      </button>
-
-      {expanded && (
-        <div className="shop-expanded">
-          <Feature title="UI & ease of use">{watch.ui}</Feature>
-
-          <div className="shop-procon">
-            <div>
-              <h4>＋ The good</h4>
-              <ul>{watch.pros.map(item => <li key={item}>{item}</li>)}</ul>
+        {open && (
+          <div className="gs-open">
+            <Detail title="Everyday">{watch.everyday}</Detail>
+            <Detail title="Fitness">{watch.fitness}</Detail>
+            <Detail title="Durability">{watch.durability}</Detail>
+            <Detail title="Using it">{watch.ui}</Detail>
+            <Detail title="What people say">{watch.review}</Detail>
+            <div className="gs-procon">
+              <h4>The good</h4>
+              <ul className="pro">{watch.pros.map((x) => <li key={x}>{x}</li>)}</ul>
+              <h4>The trade-offs</h4>
+              <ul className="con">{watch.cons.map((x) => <li key={x}>{x}</li>)}</ul>
             </div>
-            <div>
-              <h4>− The trade-offs</h4>
-              <ul>{watch.cons.map(item => <li key={item}>{item}</li>)}</ul>
-            </div>
+            <div className="gs-fit"><b>Best for Norita if…</b><p>{watch.fit}</p></div>
           </div>
+        )}
+      </div>
 
-          <div className="shop-fit">
-            <b>Best for Norita if…</b>
-            <p>{watch.fit}</p>
-          </div>
-        </div>
-      )}
-
-      <button
-        type="button"
-        className={`shop-choose ${selected ? 'chosen' : ''}`}
-        onClick={() => onSelect(watch.id)}
-      >
-        {selected ? 'Selected for the birthday ✓' : 'Choose this watch'}
+      <button type="button" className={'gs-choose' + (picked ? ' chosen' : '')} onClick={() => onPick(watch.id)}>
+        {picked ? 'Your birthday pick ✓' : 'Choose this watch'}
       </button>
-      <p className="shop-price-note">{watch.priceNote}</p>
+      <p className="gs-note">{watch.priceNote}</p>
     </article>
   );
 }
 
 export default function Shop() {
-  const [selectedId, setSelectedId] = useState('vivoactive5');
+  const [picked, setPicked] = useState('vivoactive5');
+  const [at, setAt] = useState(0);
+  const track = useRef(null);
+
+  const nearest = () => {
+    const el = track.current, mid = el.scrollLeft + el.clientWidth / 2;
+    let best = 0, gap = Infinity;
+    [...el.children].forEach((c, n) => {
+      const d = Math.abs(c.offsetLeft + c.offsetWidth / 2 - mid);
+      if (d < gap) { gap = d; best = n; }
+    });
+    return best;
+  };
+  const goTo = (n) => {
+    const el = track.current, c = el.children[n];
+    el.scrollTo({ left: c.offsetLeft - (el.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' });
+  };
 
   return (
     <section className="garmin-shop">
-      <div className="shop-intro">
-        <span>THE BIRTHDAY EDITION</span>
-        <h2>Find your perfect Garmin.</h2>
-        <p>Three watches. Three personalities. Pick the one that fits your life.</p>
+      <div className="gs-intro">
+        <h2>Find your perfect Garmin</h2>
+        <p>Three watches, three personalities. Swipe through and pick one.</p>
       </div>
 
-      <div className="shop-model-nav" role="group" aria-label="Choose a Garmin to compare">
-        {WATCHES.map((watch, index) => (
-          <button
-            key={watch.id}
-            type="button"
-            className={selectedId === watch.id ? 'active' : ''}
-            onClick={() => setSelectedId(watch.id)}
-          >
-            <small>0{index + 1}</small>
-            {watch.name}
+      <div className="gs-nav" role="group" aria-label="Jump to a watch">
+        {WATCHES.map((w, n) => (
+          <button key={w.id} type="button" className={n === at ? 'on' : ''} aria-pressed={n === at} onClick={() => goTo(n)}>
+            {picked === w.id && <i aria-label="Your pick">✓</i>}
+            {w.short}
+            <small>{w.role}</small>
           </button>
         ))}
       </div>
 
-      <div className="shop-products">
-        {WATCHES.map(watch => (
-          <WatchCard
-            key={watch.id}
-            watch={watch}
-            selected={selectedId === watch.id}
-            onSelect={setSelectedId}
-          />
+      <div className="gs-track" ref={track} onScroll={() => setAt(nearest())}>
+        {WATCHES.map((w, n) => (
+          <WatchCard key={w.id} watch={w} active={n === at} picked={picked === w.id} onPick={setPicked} />
         ))}
       </div>
 
-      <p className="shop-disclaimer">
-        Colour availability varies by region and edition. Battery life is a manufacturer
-        estimate and varies with settings and use. Prices are indicative, not live quotes.
+      <p className="gs-fine">
+        Colours vary by region and edition. Battery life is a manufacturer estimate. Prices are indicative, not live quotes.
       </p>
     </section>
   );

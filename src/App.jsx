@@ -8,11 +8,11 @@ import Jigsaw from './Jigsaw.jsx';
 import Collage from './Collage.jsx';
 import Booth from './Booth.jsx';
 import Karaoke from './Karaoke.jsx';
-import { shrink } from './util.js';
+import { prepare, uploadPhoto } from '../api/upload.js';
 
 const KEY = 'race-step';
 const ICONS = ['🏁', '🧋', '📸', '🏮', '🏛️', '🎤', '⌚', '🚉', '🥭'];
-const COLORS = ['#ffb02e', '#ff6f59', '#7ee0c0', '#fff7e8', '#ffd98a'];
+const COLORS = ['#FFBF34', '#93B21F', '#ffffff', '#6fb0e6', '#ffe08a'];
 const letterAt = S.map((s, n) => (s.letter ? n : -1)).filter((n) => n >= 0);
 const firstOf = CHAPTERS.map((_, c) => S.findIndex((s) => s.c === c));
 
@@ -63,19 +63,20 @@ export default function App() {
     setBusy(true);
     setMsg({ text: 'Uploading...', kind: '' });
     try {
-      const blob = await shrink(file);
-      const r = await fetch('/api/upload?name=' + encodeURIComponent(s.photo), {
-        method: 'POST', headers: { 'Content-Type': 'image/jpeg' }, body: blob,
-      });
-      if (!r.ok) throw new Error();
+      const blob = await prepare(file);
+      // show the photo straight away so she can see it worked on her side
       setPhotos((p) => ({ ...p, [s.photo]: URL.createObjectURL(blob) }));
-      unlock();
-      setMsg({ text: 'Saved!', kind: 'ok' });
-    } catch {
+      try {
+        await uploadPhoto(s.photo, blob);
+        setMsg({ text: 'Saved!', kind: 'ok' });
+      } catch (e) {
+        console.error('upload failed', e);
+        setMsg({ text: `Couldn't save it (${e.message}). Try again, or tap Next to skip.`, kind: 'err' });
+      }
+    } finally {
       unlock(); // never leave her stuck
-      setMsg({ text: 'Upload failed. Check signal and try again, or tap Next to skip.', kind: 'err' });
+      setBusy(false);
     }
-    setBusy(false);
   }
 
   return (
@@ -157,8 +158,9 @@ export default function App() {
               {s.photo && (
                 <div className="extra">
                   <label className="btn alt pick">
-                    {photos[s.photo] ? 'Retake photo' : 'Take / choose photo'}
-                    <input type="file" accept="image/*" hidden onChange={(e) => upload(e.target.files[0])} />
+                    {busy ? 'Uploading...' : photos[s.photo] ? 'Retake photo' : 'Take / choose photo'}
+                    <input type="file" accept="image/*" disabled={busy}
+                      onChange={(e) => { const f = e.target.files[0]; e.target.value = ''; upload(f); }} />
                   </label>
                   <p className={'msg ' + msg.kind}>{msg.text}</p>
                   {photos[s.photo] && <img className="thumb" src={photos[s.photo]} alt="" />}
