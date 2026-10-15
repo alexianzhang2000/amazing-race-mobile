@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { shrink } from './util.js';
-import { uploadPhoto } from '../api/upload.js';
+import { uploadPhoto } from './upload.js';
 import { NAME } from './story.js';
 
 const COUNT = 9;                       // 3x3 grid, one photo per panel

@@ -8,7 +8,7 @@ import Jigsaw from './Jigsaw.jsx';
 import Collage from './Collage.jsx';
 import Booth from './Booth.jsx';
 import Karaoke from './Karaoke.jsx';
-import { prepare, uploadPhoto } from '../api/upload.js';
+import { prepare, uploadPhoto } from './upload.js';
 
 const KEY = 'race-step';
 const ICONS = ['🏁', '🧋', '📸', '🏮', '🏛️', '🎤', '⌚', '🚉', '🥭'];
