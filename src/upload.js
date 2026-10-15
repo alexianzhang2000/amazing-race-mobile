@@ -1,4 +1,4 @@
-import { shrink } from '../src/util.js';
+import { shrink } from './util.js';
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
