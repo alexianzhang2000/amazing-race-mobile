@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import Img from './Img.jsx';
 import fist from './assets/poses/fist.webp';
 import pray from './assets/poses/pray.webp';
 import roar from './assets/poses/roar.webp';
@@ -54,7 +55,7 @@ export default function Booth() {
         {POSES.map((p, n) => (
           <article className={'pose' + (n === at ? ' on' : '')} key={n}>
             <div className="pnum">Pose {n + 1} of {POSES.length}</div>
-            <div className="pimg"><img src={p.img} alt={p.t} /></div>
+            <div className="pimg"><Img src={p.img} alt={p.t} /></div>
             <div className="pt">{p.t}</div>
             <div className="pd">{p.d}</div>
           </article>

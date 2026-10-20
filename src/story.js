@@ -18,7 +18,7 @@ export const S = [
   { c: 0, t: "Rules:\n1. No talking to strangers (photos only).\n2. Keep this page open on your phone.\n3. Stuck? Tap the menu at the top left to jump to a checkpoint." },
   { c: 1, h: 'Leg 1: Molly Tea', t: "Fuel up first. Your order is waiting at Molly Tea. [EDIT: which branch + how she picks it up]" },
   { c: 1, t: 'Check the cup sleeve or the bag. Your first letter is hiding there.', letter: 'O' },
-  { c: 1, h: 'One more thing...', t: "Before you leave, there's something you need to solve.\nA picture is hiding in 30 pieces. Put it back together to reveal your next clue.", puzzle: 'spot'},
+  { c: 1, h: 'One more thing...', t: "Before you leave, there's something you need to solve.\nA picture is hiding in 20 pieces. Put it back together to reveal your next clue.", puzzle: 'spot'},
   {
     c: 2,
     h: 'You know this place...',
@@ -37,6 +37,7 @@ export const S = [
   { c: 2, t: "Correct! Here's your next letter.", letter: 'C' },
   { c: 3, h: 'Leg 3: Haymarket', t: "Colour challenge! Find 9 red things around Haymarket. Photos only, no talking to strangers." },
   { c: 3, t: "Tap a panel, snap something red, and watch your colour story build. Nine reds and it's ready to post.", collage: true },
+  { c: 3, h: 'Make it yours', t: "Pick a frame, stickers and a filter, then save it and post it. Tap Next when you're done.", studio: true },
   { c: 3, t: 'Nice eye. Another letter is yours.', letter: 'M' },
   { c: 4, h: 'Photobooth time!', t: "Drag your gamemaster into a photobooth. You have to recreate a meme pose. [EDIT: where the booth is]" },
   { c: 4, t: "Swipe through the pose deck, or hit Surprise us. Pick one and commit.", booth: true },

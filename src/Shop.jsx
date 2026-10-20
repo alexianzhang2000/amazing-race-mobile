@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react';
+import Img from './Img.jsx';
 
 const WATCHES = [
   {
@@ -172,7 +173,8 @@ function WatchCard({ watch, active, picked, onPick }) {
         {picked && <b className="gs-pick">Birthday pick</b>}
         {broken[color.image]
           ? <WatchArt color={color} />
-          : <img key={color.image} src={color.image} alt={`${watch.name} in ${color.name}`} loading="lazy"
+          : <Img key={color.image} src={color.image} alt={`${watch.name} in ${color.name}`} loading="lazy"
+              wrapClass="gs-imgwrap"
               onError={() => setBroken((b) => ({ ...b, [color.image]: true }))} />}
       </div>
 
