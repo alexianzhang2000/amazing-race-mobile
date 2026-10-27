@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { remember } from './keepsakes.js';
 
 // Edit the setlist here
 const SONGS = [
@@ -18,7 +19,9 @@ export default function Karaoke({ done, onDone }) {
 
   const toggle = (n) => setSung((c) => {
     const x = c.includes(n) ? c.filter((v) => v !== n) : [...c, n];
-    cache = x; return x;
+    cache = x;
+    remember('songs', x.map((n) => ({ t: SONGS[n].title, a: SONGS[n].artist })));
+    return x;
   });
 
   return (

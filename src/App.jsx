@@ -3,16 +3,28 @@ import { CHAPTERS, S } from './story.js';
 import gm from './assets/gamemaster.webp';
 import spot from './assets/spot.jpg';
 import busClue from './assets/b-line.webp';
+import firstDate from './assets/norita-alex-first-date.jpg';
 import Shop from './Shop.jsx';
 import Jigsaw from './Jigsaw.jsx';
 import Collage, { CollageStudio } from './Collage.jsx';
 import Booth from './Booth.jsx';
 import Karaoke from './Karaoke.jsx';
+import RabbitWall from './RabbitWall.jsx';
+import Credits from './Credits.jsx';
+import { keepPhoto, resetKeepsakes, remember } from './keepsakes.js';
 import Img from './Img.jsx';
 import { prepare, uploadPhoto } from './upload.js';
 
+
 const KEY = 'race-step';
-const ICONS = ['🏁', '🧋', '📸', '🏮', '🏛️', '🎤', '⌚', '🚉', '🥭'];
+try { if (localStorage.getItem(KEY) === null) { resetKeepsakes(); remember('start', Date.now()); } } catch {}
+const CLUE_IMAGES = {
+  'bus-clue': [busClue, 'Double-decker bus clue'],
+  'first-date': [firstDate, 'Our first date at the White Rabbit Gallery'],
+  spot: [spot, 'Clue location'],
+};
+
+const ICONS = ['🏁', '🐇', '🧋', '📸', '🏮', '🏛️', '🎤', '⌚', '🚉', '🥭'];
 const COLORS = ['#FFBF34', '#93B21F', '#ffffff', '#6fb0e6', '#ffe08a'];
 const letterAt = S.map((s, n) => (s.letter ? n : -1)).filter((n) => n >= 0);
 const firstOf = CHAPTERS.map((_, c) => S.findIndex((s) => s.c === c));
@@ -31,7 +43,7 @@ export default function App() {
   const [burst, setBurst] = useState(0);
   const mainRef = useRef(null);
   const s = S[i];
-  const locked = (s.ask || s.photo || s.collage || s.karaoke || s.puzzle) && !done[i];
+  const locked = (s.ask || s.photo || s.collage || s.karaoke || s.puzzle || s.rabbit) && !done[i];
  
   useEffect(() => {
     try { localStorage.setItem(KEY, i); } catch {}
@@ -70,6 +82,7 @@ export default function App() {
     setMsg({ text: 'Uploading...', kind: '' });
     try {
       const blob = await prepare(file);
+      keepPhoto(s.photo, blob);     // her own copy, for the end credits
       // show the photo straight away so she can see it worked on her side
       setPhotos((p) => ({ ...p, [s.photo]: URL.createObjectURL(blob) }));
       try {
@@ -83,6 +96,13 @@ export default function App() {
       unlock(); // never leave her stuck
       setBusy(false);
     }
+  }
+
+  async function startOver() {
+    if (!window.confirm('Start the race over? This clears your progress and photos on this phone.')) return;
+    try { localStorage.removeItem(KEY); } catch {}
+    await resetKeepsakes();
+    location.reload();
   }
  
   return (
@@ -125,6 +145,19 @@ export default function App() {
                   <p className="reveal-cap">Letter {letterAt.indexOf(i) + 1} of {letterAt.length}</p>
                 </div>
               )}
+
+              {s.rabbit && (
+                <RabbitWall
+                  solved={!!done[i]}
+                  onComplete={() => {
+                    unlock();
+                    setBurst((b) => b + 1);
+                    setTimeout(() => setBurst(0), 1400);
+                  }}
+                />
+              )}
+
+              {s.credits && <Credits />}
  
               {s.collage && <Collage onDone={unlock} />}
  
@@ -154,15 +187,12 @@ export default function App() {
                   <Img
                     className="story-image"
                     wrapClass="story-sk"
-                    src={s.image === 'bus-clue' ? busClue : spot}
-                    alt={
-                      s.image === 'bus-clue'
-                        ? 'Double-decker bus clue'
-                        : 'Clue location'
-                    }
+                    src={(CLUE_IMAGES[s.image] || CLUE_IMAGES.spot)[0]}
+                    alt={(CLUE_IMAGES[s.image] || CLUE_IMAGES.spot)[1]}
                   />
                 </div>
               )}
+
  
               {s.ask && (
                 <div className="extra">
@@ -218,6 +248,7 @@ export default function App() {
                 {s.c > c ? '✓ ' : ''}{n}
               </button>
             ))}
+            <button type="button" className="reset" onClick={startOver}>Start over</button>
           </nav>
         </div>
       )}

@@ -3,6 +3,7 @@ import { shrink } from './util.js';
 import { uploadPhoto } from './upload.js';
 import { COUNT, THEMES, PACKS, FILTERS, SUB, load, vivid, render, prep, cover, hasFx } from './Collageart.js';
 import { drawSticker } from './stickers.js';
+import { keepPhoto } from './keepsakes.js';
 
 // Shared by the two screens below (photos step + styling step), and kept if she navigates away and back
 let cache = Array(COUNT).fill(null);
@@ -24,6 +25,7 @@ export default function Collage({ onDone }) {
       const blob = await shrink(file), url = URL.createObjectURL(blob);
       const color = vivid(await load(url));
       setTiles((t) => { const n = [...t]; n[k] = { url, color }; cache = n; return n; });
+      keepPhoto('red-' + (k + 1), blob); // her own copy, for the end credits
       uploadPhoto('red-' + (k + 1), blob).catch(() => setLost((n) => n + 1));
     } catch { setErr("Couldn't read that photo, try another."); }
   }

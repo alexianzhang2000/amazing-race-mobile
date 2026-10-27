@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import spot from './assets/spot.jpg';
+import { remember } from './keepsakes.js';
 
 const COLS = 4;
 const ROWS = 5;
@@ -43,13 +44,15 @@ export default function Jigsaw({ solved = false, onComplete }) {
     [tiles]
   );
 
-  useEffect(() => {
+    useEffect(() => {
     if (isSolved && !complete) {
       setComplete(true);
       setFresh(true);
+      remember('puzzleMoves', moves);
       onComplete?.();
     }
   }, [isSolved, complete, onComplete]);
+
 
   function tap(index) {
     if (complete) return;

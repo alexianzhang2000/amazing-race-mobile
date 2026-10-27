@@ -1,4 +1,5 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { remember } from './keepsakes.js';
 import Img from './Img.jsx';
 
 const WATCHES = [
@@ -237,6 +238,7 @@ export default function Shop() {
   const [picked, setPicked] = useState('vivoactive5');
   const [at, setAt] = useState(0);
   const track = useRef(null);
+  useEffect(() => { remember('watch', WATCHES.find((w) => w.id === picked)?.name); }, [picked]);   // for the end credits
 
   const nearest = () => {
     const el = track.current, mid = el.scrollLeft + el.clientWidth / 2;
