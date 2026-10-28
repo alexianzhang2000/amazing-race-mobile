@@ -416,7 +416,7 @@ export async function render(tiles, th, o) {
       rr(x, 0, 0, T, T, pol ? 6 : 4); x.fillStyle = '#fffdf8'; x.fill();
       x.shadowColor = 'rgba(0,0,0,0)';
       x.save(); x.beginPath(); x.rect(m, m, T - 2 * m, T - m - bot); x.clip(); cover(x, imgs[k], m, m, T - 2 * m, T - m - bot); x.restore();
-      if (pol) { x.fillStyle = th.ink; x.font = `500 25px ${F}`; x.fillText(`red no.${k + 1} ♥`, T / 2, T - 20); }
+      if (pol) { x.fillStyle = th.ink; x.font = `500 25px ${F}`; }
       else {
         x.save(); x.translate(T / 2 + (rnd() - 0.5) * 60, 4); x.rotate((rnd() - 0.5) * 0.5);
         x.fillStyle = `rgba(${th.tape[k % th.tape.length]},.78)`; x.fillRect(-48, -15, 96, 30); x.restore();

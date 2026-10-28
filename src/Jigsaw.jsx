@@ -80,12 +80,12 @@ export default function Jigsaw({ solved = false, onComplete }) {
       <div className="jigsaw-head">
         <div>
           <strong>
-            {complete ? 'You found it! 🎉' : 'Piece it together'}
+            {complete ? 'You completed it! 🎉' : 'Piece it together'}
           </strong>
 
           <span>
             {complete
-              ? 'That looks familiar...'
+              ? 'Amazing work! You solved the puzzle in ' + moves + (moves === 1 ? ' move' : ' moves') + '.'
               : 'Tap two pieces to swap them'}
           </span>
         </div>

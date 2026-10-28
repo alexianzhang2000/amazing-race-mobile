@@ -1,14 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 // ── Edit the puzzle here ──────────────────────────────────────────────
 const ANSWER = ['🤍', '🐇', '🖼️'];      // White · Rabbit · Gallery (order matters)
-const DECOYS = ['✌️', '🪞', '🍵'];      // red herrings from the first date
+const DECOYS = ['💩', '💩', '💩'];      // red herrings from the first date
 const PLACE = 'White Rabbit Gallery';
 const ADDRESS = '30 Balfour St, Chippendale';
 const HINT = 'Think in order: a colour, an animal, then where art hangs.';
 // ──────────────────────────────────────────────────────────────────────
 
 const COLS = 3, ROWS = 2, TOTAL = COLS * ROWS;
+// Where the rabbit may land, as % of the wall. He always stays fully on screen sideways, and about 3 hops in 10
+// he leaves the wall altogether, up over the heading or down over the tray, so he's hard to predict.
+const ROAM = { x: [8, 92], y: [4, 96], above: [-14, -2], below: [102, 116], outside: 0.3 };
+const MIN_HOP = 120;                         // never hop less than this many px, so it's hard to guess
+const HOP_MS = (caught) => Math.max(900, 2000 - caught * 220);   // time between hops, quicker each catch
 const TILT = [-2.4, 1.6, -1.2, 2.2, -1.8, 1.4];
 const shuffle = (a) => { const b = [...a]; for (let i = b.length - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [b[i], b[j]] = [b[j], b[i]]; } return b; };
 const pickFrom = (list) => list[(Math.random() * list.length) | 0];
@@ -37,7 +42,8 @@ function Rabbit() {
 export default function RabbitWall({ solved = false, onComplete }) {
   const [emojis] = useState(() => shuffle([...ANSWER, ...DECOYS]));   // what hides behind each frame
   const [got, setGot] = useState(() => (solved ? emojis.map((_, k) => k) : []));   // frames uncovered, in the order she caught them
-  const [at, setAt] = useState(() => (Math.random() * TOTAL) | 0);    // frame the rabbit is sitting on
+  const [pos, setPos] = useState({ x: 50, y: 50 });     // where the rabbit is, % of the wall
+  const wallRef = useRef(null), frameRefs = useRef([]);
   const [hopKey, setHopKey] = useState(0);
   const [busy, setBusy] = useState(false);
   const [slots, setSlots] = useState(solved ? ANSWER : []);
@@ -47,26 +53,46 @@ export default function RabbitWall({ solved = false, onComplete }) {
   const [msg, setMsg] = useState('');
   const all = got.length === TOTAL;
 
-  // The rabbit gets bored and hops to another frame, faster each time she catches him
+  // Anywhere on the wall (or just off it), but never close to where he just was
+  const randomSpot = (from) => {
+    const r = wallRef.current?.getBoundingClientRect();
+    let p;
+    for (let t = 0; t < 12; t++) {
+      const band = Math.random() < ROAM.outside ? (Math.random() < 0.5 ? ROAM.above : ROAM.below) : ROAM.y;
+      p = { x: ROAM.x[0] + Math.random() * (ROAM.x[1] - ROAM.x[0]), y: band[0] + Math.random() * (band[1] - band[0]) };
+      if (!r || Math.hypot(((p.x - from.x) * r.width) / 100, ((p.y - from.y) * r.height) / 100) > MIN_HOP) break;
+    }
+    return p;
+  };
+
+  // He keeps hopping about, a little faster each time she catches him, with a bit of random timing
   useEffect(() => {
     if (all || busy) return;
-    const t = setTimeout(() => {
-      const left = emojis.map((_, k) => k).filter((k) => !got.includes(k) && k !== at);
-      if (left.length) { setAt(pickFrom(left)); setHopKey((n) => n + 1); }
-    }, Math.max(1000, 2500 - got.length * 280));
+    const t = setTimeout(() => { setPos((p) => randomSpot(p)); setHopKey((n) => n + 1); }, HOP_MS(got.length) * (0.8 + Math.random() * 0.5));
     return () => clearTimeout(t);
-  }, [at, got.length, busy, all]);
+  }, [pos, got.length, busy, all]);
 
   function catchIt() {
-    if (busy || all) return;
+    if (busy || all || !wallRef.current) return;
     navigator.vibrate?.(25);
-    const next = [...got, at];
-    setGot(next); setBusy(true);
+    // He hops onto the unopened frame nearest to where he was caught, and that one lifts its cloth
+    const w = wallRef.current.getBoundingClientRect();
+    const px = w.left + (pos.x / 100) * w.width, py = w.top + (pos.y / 100) * w.height;
+    let best = -1, bd = Infinity;
+    frameRefs.current.forEach((el, k) => {
+      if (!el || got.includes(k)) return;
+      const r = el.getBoundingClientRect(), d = Math.hypot(r.left + r.width / 2 - px, r.top + r.height / 2 - py);
+      if (d < bd) { bd = d; best = k; }
+    });
+    if (best < 0) return;
+    const f = frameRefs.current[best].getBoundingClientRect();
+    setBusy(true);
+    setPos({ x: ((f.left + f.width / 2 - w.left) / w.width) * 100, y: ((f.top + f.height / 2 - w.top) / w.height) * 100 });
+    setHopKey((n) => n + 1);
+    setTimeout(() => setGot((g) => [...g, best]), 480);
     setTimeout(() => {
-      const left = emojis.map((_, k) => k).filter((k) => !next.includes(k));
-      if (left.length) { setAt(pickFrom(left)); setHopKey((n) => n + 1); }
-      setBusy(false);
-    }, 850);
+      setPos((p) => randomSpot(p)); setHopKey((n) => n + 1); setBusy(false);
+    }, 1450);
   }
 
   function place(e) {
@@ -85,33 +111,28 @@ export default function RabbitWall({ solved = false, onComplete }) {
     }
   }
 
-  const col = at % COLS, row = Math.floor(at / COLS);
-  const g = 'var(--g)';
   return (
     <div className="rw">
       {!solved && (
         <>
           <p className="rw-count">{all ? 'All six uncovered!' : `Caught ${got.length} of ${TOTAL}. Tap the rabbit before he hops!`}</p>
-          <div className="rw-wall">
+          <div className="rw-wall" ref={wallRef}>
             <div className="rw-grid">
               {emojis.map((e, k) => (
-                <div key={k} className={'rw-frame' + (got.includes(k) ? ' open' : '')} style={{ '--r': TILT[k] + 'deg' }}>
+                <div key={k} ref={(el) => { frameRefs.current[k] = el; }} className={'rw-frame' + (got.includes(k) ? ' open' : '')} style={{ '--r': TILT[k] + 'deg' }}>
                   <div className="rw-art">
                     <span className="rw-emoji">{e}</span>
                     <span className="rw-cloth" />
                   </div>
                 </div>
               ))}
-              {!all && (
-                <button type="button" className="rw-rabbit" aria-label="Catch the rabbit" onClick={catchIt}
-                  style={{
-                    left: `calc(${col} * ((100% - 2 * ${g}) / 3 + ${g}) + (100% - 2 * ${g}) / 6)`,
-                    top: `calc(${row} * ((100% - ${g}) / 2 + ${g}) + (100% - ${g}) / 4)`,
-                  }}>
-                  <span key={hopKey}><Rabbit /></span>
-                </button>
-              )}
             </div>
+            {!all && (
+              <button type="button" className="rw-rabbit" aria-label="Catch the rabbit" onClick={catchIt}
+                style={{ left: pos.x + '%', top: pos.y + '%' }}>
+                <span key={hopKey}><Rabbit /></span>
+              </button>
+            )}
           </div>
 
           <div className="rw-tray" aria-label="Clues collected">
@@ -130,13 +151,11 @@ export default function RabbitWall({ solved = false, onComplete }) {
         <div className={'rw-label' + (ok ? ' ok' : '')}>
           {ok ? (
             <>
-              <small>Now showing</small>
               <h3>{PLACE}</h3>
               <p className="rw-addr">{ADDRESS}</p>
             </>
           ) : (
             <>
-              <small>Untitled, 2026 · mixed emoji on wall</small>
               <p className="rw-ask">Hang the three clues on the placard, in order.</p>
             </>
           )}

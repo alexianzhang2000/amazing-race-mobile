@@ -3,6 +3,7 @@ import { CHAPTERS, S } from './story.js';
 import gm from './assets/gamemaster.webp';
 import spot from './assets/spot.jpg';
 import busClue from './assets/b-line.webp';
+import redHuntInspiration from './assets/colour-hunting-inspiration.jpg';
 import firstDate from './assets/norita-alex-first-date.jpg';
 import Shop from './Shop.jsx';
 import Jigsaw from './Jigsaw.jsx';
@@ -12,30 +13,33 @@ import Karaoke from './Karaoke.jsx';
 import RabbitWall from './RabbitWall.jsx';
 import Credits from './Credits.jsx';
 import { keepPhoto, resetKeepsakes, remember } from './keepsakes.js';
+import FanPhotos from './FanPhotos.jsx';
 import Img from './Img.jsx';
 import { prepare, uploadPhoto } from './upload.js';
 
-
 const KEY = 'race-step';
+// A brand-new run (nothing saved yet): clear any test photos and start the clock for the credits
 try { if (localStorage.getItem(KEY) === null) { resetKeepsakes(); remember('start', Date.now()); } } catch {}
 const CLUE_IMAGES = {
   'bus-clue': [busClue, 'Double-decker bus clue'],
   'first-date': [firstDate, 'Our first date at the White Rabbit Gallery'],
+  'red-hunt-inspiration': [redHuntInspiration, 'Inspiration for the red-hunt challenge'],
   spot: [spot, 'Clue location'],
 };
-
-const ICONS = ['🏁', '🐇', '🧋', '📸', '🏮', '🏛️', '🎤', '⌚', '🚉', '🥭'];
+const ICONS = ['🏁', '🐇', '📸', '🏮', '🏛️', '🎤', '🧋', '⌚', '🚉', '🥭'];
 const COLORS = ['#FFBF34', '#93B21F', '#ffffff', '#6fb0e6', '#ffe08a'];
 const letterAt = S.map((s, n) => (s.letter ? n : -1)).filter((n) => n >= 0);
 const firstOf = CHAPTERS.map((_, c) => S.findIndex((s) => s.c === c));
- 
+
 export default function App() {
   const [i, setI] = useState(() => {
     try { return Math.min(+localStorage.getItem(KEY) || 0, S.length - 1); } catch { return 0; }
   });
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState({});
-  const [photos, setPhotos] = useState({});
+  const [fanShots, setFanShots] = useState({});   // her new photo, for steps that show it next to the old one
+  const [shots, setShots] = useState({});   // per step: 'ok' once uploaded, 'fail' if it didn't save
+  const [teaPreview, setTeaPreview] = useState('');
   const [ans, setAns] = useState('');
   const [tries, setTries] = useState(0);
   const [msg, setMsg] = useState({ text: '', kind: '' });
@@ -44,13 +48,19 @@ export default function App() {
   const mainRef = useRef(null);
   const s = S[i];
   const locked = (s.ask || s.photo || s.collage || s.karaoke || s.puzzle || s.rabbit) && !done[i];
- 
+
+  useEffect(() => {
+    return () => {
+      if (teaPreview) URL.revokeObjectURL(teaPreview);
+    };
+  }, [teaPreview]);
+
   useEffect(() => {
     try { localStorage.setItem(KEY, i); } catch {}
     setAns(''); setTries(0); setMsg({ text: '', kind: '' });
     mainRef.current?.scrollTo(0, 0);
     const isLetter = !!S[i].letter;
-    if (isLetter || i === S.length - 1) {
+    if (isLetter || S[i].burst || i === S.length - 1) {
       const delay = isLetter ? 900 : 0; // wait for the letter card to flip
       const a = setTimeout(() => {
         setBurst((b) => b + 1);
@@ -60,9 +70,9 @@ export default function App() {
       return () => { clearTimeout(a); clearTimeout(b); };
     }
   }, [i]);
- 
+
   const unlock = () => setDone((d) => ({ ...d, [i]: true }));
- 
+
   function check() {
     if (s.ask.a.includes(ans.trim().toLowerCase())) {
       unlock(); setMsg({ text: 'Correct!', kind: 'ok' });
@@ -75,21 +85,25 @@ export default function App() {
       setMsg({ text: `Hint: ${s.ask.hint} (or tap Next to skip)`, kind: 'err' });
     } else setMsg({ text: 'Not quite, try again.', kind: 'err' });
   }
- 
+
   async function upload(file) {
     if (!file || busy) return;
     setBusy(true);
-    setMsg({ text: 'Uploading...', kind: '' });
+    setMsg({ text: '', kind: '' });
     try {
       const blob = await prepare(file);
       keepPhoto(s.photo, blob);     // her own copy, for the end credits
-      // show the photo straight away so she can see it worked on her side
-      setPhotos((p) => ({ ...p, [s.photo]: URL.createObjectURL(blob) }));
       try {
         await uploadPhoto(s.photo, blob);
-        setMsg({ text: 'Saved!', kind: 'ok' });
+        setShots((p) => ({ ...p, [s.photo]: 'ok' }));
+        if (s.photo === 'molly-tea') setTeaPreview(URL.createObjectURL(blob));
+        if (s.fan) {                                    // show it fanned out with the first-date photo
+          setFanShots((p) => ({ ...p, [s.photo]: URL.createObjectURL(blob) }));
+          mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       } catch (e) {
         console.error('upload failed', e);
+        setShots((p) => ({ ...p, [s.photo]: 'fail' }));
         setMsg({ text: `Couldn't save it (${e.message}). Try again, or tap Next to skip.`, kind: 'err' });
       }
     } finally {
@@ -104,11 +118,11 @@ export default function App() {
     await resetKeepsakes();
     location.reload();
   }
- 
+
   return (
     <>
       <div className="bg" aria-hidden="true"><i /><i /><i /></div>
- 
+
       <div className="app">
         <header>
           <button className="burger" aria-label="Open checkpoints" aria-expanded={open} onClick={() => setOpen(true)}>
@@ -121,7 +135,7 @@ export default function App() {
           </div>
         </header>
         <div className="bar"><b style={{ width: (i / (S.length - 1)) * 100 + '%' }} /></div>
- 
+
         <main ref={mainRef}>
           <div className="stage">
             <div className="gm-row" key={'g' + i}>
@@ -131,11 +145,11 @@ export default function App() {
               </div>
               <p className="chap"><span>{ICONS[s.c]}</span>{CHAPTERS[s.c]}</p>
             </div>
- 
+
             <div className="box" key={'b' + i}>
               {s.h && <h2>{s.h}</h2>}
               {s.t.split('\n').map((l, k) => <p key={k}>{l}</p>)}
- 
+
               {s.letter && (
                 <div className="reveal" key={'r' + i}>
                   <div className="reveal-card" role="img" aria-label={`Letter ${s.letter}`}>
@@ -145,6 +159,18 @@ export default function App() {
                   <p className="reveal-cap">Letter {letterAt.indexOf(i) + 1} of {letterAt.length}</p>
                 </div>
               )}
+
+              {s.collage && <Collage onDone={unlock} />}
+
+              {s.studio && <CollageStudio />}
+
+              {s.booth && <Booth />}
+
+              {s.karaoke && <Karaoke done={!!done[i]} onDone={unlock} />}
+
+              {s.shop && <Shop />}
+
+              {s.credits && <Credits />}
 
               {s.rabbit && (
                 <RabbitWall
@@ -157,18 +183,6 @@ export default function App() {
                 />
               )}
 
-              {s.credits && <Credits />}
- 
-              {s.collage && <Collage onDone={unlock} />}
- 
-              {s.studio && <CollageStudio />}
- 
-              {s.booth && <Booth />}
- 
-              {s.karaoke && <Karaoke done={!!done[i]} onDone={unlock} />}
- 
-              {s.shop && <Shop />}
- 
               {s.puzzle && (
                 <Jigsaw
                   solved={!!done[i]}
@@ -176,13 +190,17 @@ export default function App() {
                     unlock();
                     setMsg({ text: 'Puzzle solved! 🧩', kind: 'ok' });
                     setBurst((b) => b + 1);
- 
+
                     setTimeout(() => setBurst(0), 1400);
                   }}
                 />
               )}
- 
-              {s.image && (
+
+              {s.image && s.fan && fanShots[s.photo] && (
+                <FanPhotos then={(CLUE_IMAGES[s.image] || CLUE_IMAGES.spot)[0]} now={fanShots[s.photo]} />
+              )}
+
+              {s.image && !(s.fan && fanShots[s.photo]) && (
                 <div className="story-image-wrap">
                   <Img
                     className="story-image"
@@ -193,7 +211,6 @@ export default function App() {
                 </div>
               )}
 
- 
               {s.ask && (
                 <div className="extra">
                   <input type="text" autoComplete="off" autoCapitalize="none" placeholder="Your answer"
@@ -203,22 +220,28 @@ export default function App() {
                   <button className="btn alt" onClick={check}>Check</button>
                 </div>
               )}
- 
+
               {s.photo && (
                 <div className="extra">
+                  {s.photo === 'molly-tea' && teaPreview && (
+                    <div className="story-image-wrap">
+                      <img className="story-image" src={teaPreview} alt="Uploaded photo of you both drinking Molly Tea" />
+                    </div>
+                  )}
                   <label className="btn alt pick">
-                    {busy ? 'Uploading...' : photos[s.photo] ? 'Retake photo' : 'Take / choose photo'}
+                    {busy
+                      ? <span className="spin" role="status" aria-label="Uploading" />
+                      : shots[s.photo] === 'ok' ? 'Retake photo' : shots[s.photo] === 'fail' ? 'Try again' : 'Take / choose photo'}
                     <input type="file" accept="image/*" disabled={busy}
                       onChange={(e) => { const f = e.target.files[0]; e.target.value = ''; upload(f); }} />
                   </label>
                   <p className={'msg ' + msg.kind}>{msg.text}</p>
-                  {photos[s.photo] && <img className="thumb" src={photos[s.photo]} alt="" />}
                 </div>
               )}
             </div>
           </div>
         </main>
- 
+
         <footer>
           <button className="btn back" disabled={i === 0} aria-label="Back" onClick={() => setI(i - 1)}>&larr;</button>
           <button className="btn next" disabled={locked || i === S.length - 1} onClick={() => setI(i + 1)}>
@@ -226,7 +249,7 @@ export default function App() {
           </button>
         </footer>
       </div>
- 
+
       {burst > 0 && (
         <div className="confetti" key={burst} aria-hidden="true">
           {Array.from({ length: 20 }, (_, k) => {
@@ -235,7 +258,7 @@ export default function App() {
           })}
         </div>
       )}
- 
+
       {open && (
         <div className="drawer" onClick={() => setOpen(false)}>
           <nav className="panel" onClick={(e) => e.stopPropagation()}>

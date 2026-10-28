@@ -7,7 +7,7 @@ import cathug from './assets/poses/cathug.webp';
 import sixseven from './assets/poses/sixseven.webp';
 import tongue from './assets/poses/tongue.webp';
 import finger from './assets/poses/finger.webp';
-import cook from './assets/poses/cook.webp';
+import cook from './assets/poses/marmot-cook.jpg';
 
 const POSES = [
   { img: fist, t: 'Fist to the mouth', d: "Stand side by side. One of you aims a fist at the other's mouth. Stay deadpan." },
@@ -41,12 +41,6 @@ export default function Booth() {
     el.scrollTo({ left: c.offsetLeft - (el.clientWidth - c.offsetWidth) / 2, behavior: 'smooth' });
   };
 
-  const surprise = () => {
-    let n;
-    do { n = Math.floor(Math.random() * POSES.length); } while (n === at);
-    goTo(n);
-  };
-
   useEffect(() => { setAt(nearest()); }, []);
 
   return (
@@ -54,7 +48,6 @@ export default function Booth() {
       <div className="btrack" ref={ref} onScroll={() => setAt(nearest())}>
         {POSES.map((p, n) => (
           <article className={'pose' + (n === at ? ' on' : '')} key={n}>
-            <div className="pnum">Pose {n + 1} of {POSES.length}</div>
             <div className="pimg"><Img src={p.img} alt={p.t} /></div>
             <div className="pt">{p.t}</div>
             <div className="pd">{p.d}</div>
@@ -67,7 +60,6 @@ export default function Booth() {
             className={n === at ? 'on' : ''} onClick={() => goTo(n)} />
         ))}
       </div>
-      <button className="btn go shuf" onClick={surprise}>Surprise us</button>
     </div>
   );
 }

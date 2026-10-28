@@ -502,3 +502,14 @@ footer .back{flex:0 0 auto;background:var(--white);color:var(--navy);box-shadow:
 /* credits render outside the app wrapper, so give their buttons the app font */
 .cr{font-family:Fredoka,sans-serif}
 .cr .btn{font:700 18px Fredoka,sans-serif;padding:14px 22px}
+
+/* two photo prints held up together (first date + her new photo) */
+.fan{position:relative;display:grid;margin:24px 0 46px;padding:0 1%}
+.fan figure{position:relative;grid-area:1/1;width:55%;margin:0;padding:9px 9px 36px;border-radius:4px;background:#fffdf8;box-shadow:0 16px 28px rgba(0,30,60,.4)}
+.fan img{display:block;width:100%;aspect-ratio:3/4;object-fit:cover}
+.fan figcaption{position:absolute;left:0;right:0;bottom:10px;text-align:center;font:600 14px Fredoka,sans-serif;color:var(--blue)}
+.fan-then{justify-self:start;transform:rotate(-5deg);animation:fanThen .75s cubic-bezier(.2,1.1,.4,1) both}
+.fan-now{z-index:2;justify-self:end;margin-top:40px;transform:rotate(4.5deg);animation:fanNow .85s cubic-bezier(.2,1.4,.4,1) .35s both}
+@keyframes fanThen{from{transform:translateX(24%) scale(1.5) rotate(0)}}
+@keyframes fanNow{from{transform:translateY(150%) rotate(18deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){.fan-then,.fan-now{animation:none}}
