@@ -17,7 +17,7 @@
 export const NAME = 'Norita';
 export const WORD = 'MANGOCOCO';
 export const GAMEMASTER = 'Alex'; // EDIT: your name, shown in the end credits
-export const CHAPTERS = ['Briefing', 'Chasing Rabbits', 'Memory Match', 'Chinatown', 'Town Hall', 'Karaoke', 'Molly tea', 'Time Check', 'Wynyard', 'Finale'];
+export const CHAPTERS = ['Briefing', 'Chasing Rabbits', 'Memory Match', 'Chinatown', 'Photobooth time', 'Karaoke', 'Molly tea', 'Time Check', 'Wynyard', 'Finale'];
 
 export const S = [
   { c: 0, h: `Happy birthday, ${NAME}!`, t: "You've been chosen as a contestant on The Amazing Race: Sydney edition.\nNine letters are hidden across the city. Collect them all and uncover the final prize!" },
@@ -37,7 +37,7 @@ export const S = [
     h: 'What did the QR code ask?',
     t: "Enter the answer you found at the location.",
     ask: {
-      a: ['hi', 'hello', 'hey'],
+      a: ['hello 1998', 'hello1998', 'hello 98', 'hello98', 'hello 1998 clothing'],
       hint: 'Think carefully about the question on the QR code.'
     }
   },
@@ -61,19 +61,20 @@ export const S = [
   { c: 7, t: "Unbox your new watch and put it on!\nI hope you like it, I can't wait for your next marathon! Here's another letter.", letter: 'C' },
   {
     c: 8,
-    h: 'Leg 6: Wynyard',
+    h: "Hide and seek round 2!",
     t: "Where can I find these buses?\nThere's a QR code in that area. Go find it!",
     image: 'bus-clue',
   },
   {
     c: 8,
-    h: 'A bridge in plain sight',
-    t: "The QR code reveals a picture. What iconic Sydney landmark is it?",
+    h: 'This looks familiar...',
+    t: "The QR code reveals a picture. What famous landmark do people come here to see?",
     ask: {
       a: [
         'sydney harbour bridge',
         'harbour bridge',
         'the harbour bridge',
+        'the sydney harbour bridge',
       ],
       hint: 'It connects the CBD to the North Shore.',
     },
@@ -86,8 +87,8 @@ export const S = [
   },
   {
     c: 8,
-    h: 'One last view...',
-    t: "Now go to our favourite spot where you can get the best view of the Harbour Bridge.\n\nTake a photo of yourself at the spot and upload it here to prove you made it!",
+    h: "It's been a while...",
+    t: "Let's go to our favourite spot so that Alex can take a better photo of you!\n\nUpload a photo of yourself at the top of Observatory hill and you'll get your final letter.",
     photo: 'wynyard-harbour-view',
   },
   {
@@ -96,8 +97,8 @@ export const S = [
     t: "The view never gets old. You've earned your final letter!",
     letter: 'O',
   },
-  { c: 9, h: 'Unscramble it!', t: 'You have all nine letters. Where are we eating tonight?' },
+  { c: 9, h: 'All letters have been found!', t: 'You have all nine letters... Unscramble them and reveal where we are eating!' },
   { c: 9, t: 'Type the restaurant name.', ask: { a: ['mango coco', 'mangococo'], hint: 'Nine letters, two words. Think dessert.' } },
-  { c: 9, h: 'Winner!', burst: true, t: `Happy birthday, ${NAME}. Head to Mango Coco and I'll meet you there. [EDIT: final message]` },
+  { c: 9, h: "You've officially finished the race!", burst: true, t: `Thank you for playing ${NAME}. Let's head to Mango Coco for dinner, hope you're hungry and your feetsies aren't too sore!` },
   { c: 9, h: "That's a wrap!", t: "Everything you made today, rolled into the end credits. Press play.", credits: true },
 ];

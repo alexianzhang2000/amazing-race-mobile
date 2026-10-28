@@ -13,7 +13,7 @@ import Karaoke from './Karaoke.jsx';
 import RabbitWall from './RabbitWall.jsx';
 import Credits from './Credits.jsx';
 import { keepPhoto, resetKeepsakes, remember } from './keepsakes.js';
-import FanPhotos from './FanPhotos.jsx';
+import FanPhotos from './Fanphotos.jsx';
 import Img from './Img.jsx';
 import { prepare, uploadPhoto } from './upload.js';
 
@@ -26,7 +26,7 @@ const CLUE_IMAGES = {
   'red-hunt-inspiration': [redHuntInspiration, 'Inspiration for the red-hunt challenge'],
   spot: [spot, 'Clue location'],
 };
-const ICONS = ['🏁', '🐇', '📸', '🏮', '🏛️', '🎤', '🧋', '⌚', '🚉', '🥭'];
+const ICONS = ['🏁', '🐇', '📸', '🏮', '🎞️', '🎤', '🧋', '⌚', '🌉', '🥭'];
 const COLORS = ['#FFBF34', '#93B21F', '#ffffff', '#6fb0e6', '#ffe08a'];
 const letterAt = S.map((s, n) => (s.letter ? n : -1)).filter((n) => n >= 0);
 const firstOf = CHAPTERS.map((_, c) => S.findIndex((s) => s.c === c));

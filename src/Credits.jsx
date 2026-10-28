@@ -12,8 +12,6 @@ const SPEED = 40;                                    // how fast the credits rol
 const CAST = [
   ['The Contestant', NAME],
   ['The Gamemaster', GM],
-  ['The Very Late White Rabbit', 'Himself'],
-  ['The Destination', 'Mango Coco'],
 ];
 const SCENES = {
   gallery: { slot: 'white-rabbit-gallery', kicker: 'Opening scene', title: 'The White Rabbit Gallery', line: 'Where it all began', tilt: -2 },
