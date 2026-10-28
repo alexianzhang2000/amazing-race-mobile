@@ -37,6 +37,9 @@ export default function App() {
   });
   const [open, setOpen] = useState(false);
   const [done, setDone] = useState({});
+  const [boothPoses, setBoothPoses] = useState([]);
+  const [boothStrip, setBoothStrip] = useState('');
+  const [boothPhoto, setBoothPhoto] = useState('');
   const [fanShots, setFanShots] = useState({});   // her new photo, for steps that show it next to the old one
   const [shots, setShots] = useState({});   // per step: 'ok' once uploaded, 'fail' if it didn't save
   const [teaPreview, setTeaPreview] = useState('');
@@ -47,13 +50,19 @@ export default function App() {
   const [burst, setBurst] = useState(0);
   const mainRef = useRef(null);
   const s = S[i];
-  const locked = (s.ask || s.photo || s.collage || s.karaoke || s.puzzle || s.rabbit) && !done[i];
+  const locked = s.booth
+    ? boothPoses.length !== 6 || !boothStrip
+    : (s.ask || s.photo || s.collage || s.karaoke || s.puzzle || s.rabbit) && !done[i];
 
   useEffect(() => {
     return () => {
       if (teaPreview) URL.revokeObjectURL(teaPreview);
     };
   }, [teaPreview]);
+
+  useEffect(() => () => {
+    if (boothPhoto) URL.revokeObjectURL(boothPhoto);
+  }, [boothPhoto]);
 
   useEffect(() => {
     try { localStorage.setItem(KEY, i); } catch {}
@@ -96,6 +105,7 @@ export default function App() {
       try {
         await uploadPhoto(s.photo, blob);
         setShots((p) => ({ ...p, [s.photo]: 'ok' }));
+        if (s.photo === 'photobooth') setBoothPhoto(URL.createObjectURL(blob));
         if (s.photo === 'molly-tea') setTeaPreview(URL.createObjectURL(blob));
         if (s.fan) {                                    // show it fanned out with the first-date photo
           setFanShots((p) => ({ ...p, [s.photo]: URL.createObjectURL(blob) }));
@@ -164,7 +174,14 @@ export default function App() {
 
               {s.studio && <CollageStudio />}
 
-              {s.booth && <Booth />}
+              {s.booth && (
+                <Booth
+                  selected={boothPoses}
+                  strip={boothStrip}
+                  onSelectionChange={(poses) => { setBoothPoses(poses); setBoothStrip(''); }}
+                  onStripChange={setBoothStrip}
+                />
+              )}
 
               {s.karaoke && <Karaoke done={!!done[i]} onDone={unlock} />}
 
@@ -235,6 +252,18 @@ export default function App() {
                     <input type="file" accept="image/*" disabled={busy}
                       onChange={(e) => { const f = e.target.files[0]; e.target.value = ''; upload(f); }} />
                   </label>
+                  {s.photo === 'photobooth' && shots[s.photo] === 'ok' && boothStrip && boothPhoto && (
+                    <FanPhotos
+                      className="fan-booth"
+                      then={boothStrip}
+                      now={boothPhoto}
+                      thenLabel="Selected poses"
+                      nowLabel="Photobooth print"
+                      thenAlt="Generated photobooth strip with the six selected poses"
+                      nowAlt="Uploaded photo of the printed photobooth strip"
+                      ariaLabel="Generated and printed photobooth strips"
+                    />
+                  )}
                   <p className={'msg ' + msg.kind}>{msg.text}</p>
                 </div>
               )}

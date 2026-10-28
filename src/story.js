@@ -6,7 +6,7 @@
   letter reveals the next letter slot once she reaches this step
   ask    {a:[accepted answers, lowercase], hint}  text answer; unlocks Next after 3 wrong tries
   photo  id used in the saved filename; she takes/picks a photo, saved to Vercel Blob
-  shop   true shows the Garmin watch carousel (src/Shop.jsx)
+  shop   true shows the purchased Garmin watch showcase (src/Shop.jsx)
   karaoke true shows the karaoke setlist (src/Karaoke.jsx)
   burst  true throws confetti when she reaches this step
   fan    true (with image + photo) fans her uploaded photo out over the image once it saves
@@ -47,7 +47,7 @@ export const S = [
   { c: 3, h: 'Make it yours', t: "Pick a frame, stickers and a filter, then save it and post it. Tap Next when you're done.", studio: true },
   { c: 3, t: 'What an amazing collage! Have another letter', letter: 'M' },
   { c: 4, h: 'Photobooth time!', t: "Your collage is making me want to visit a photobooth!\nLet's try and recreate some silly poses." },
-  { c: 4, t: "Swipe through the pose deck, or hit Surprise us. Pick one and commit.", booth: true },
+  { c: 4, t: "Swipe through the pose deck and choose six poses for your strip.", booth: true },
   { c: 4, t: "Once your strip prints, take a photo of it and upload it here.", photo: 'photobooth' },
   { c: 4, t: "Absolute masterpiece. Here's a letter.", letter: 'G' },
   { c: 5, h: "Don't leave!", t: "Same spot, new mission: let's play some karaoke!\nGo crazy, it's your birthday!" },
@@ -56,8 +56,8 @@ export const S = [
   { c: 6, h: "Hydration time!", t: "You must be tired, recharge with some delicious Molly Tea.\nYour order should be ready soon!" },
   { c: 6, t: "Take a photo of both of us drinking our Molly Tea and upload it here as proof.", photo: 'molly-tea' },
   { c: 6, t: 'Check the cup sleeve or the bag. Another letter is hiding there.', letter: 'O' },
-  { c: 7, h: "What's the time?", t: "Time to get a watch! Alex has prepared a special gift for you!" },
-  { c: 7, t: "Fine, I did the research. Swipe through the shortlist and tap Show specs on each.", shop: true },
+  { c: 7, h: "What's the time?", t: "Time for a little preview of your birthday surprise..." },
+  { c: 7, t: "A bright screen for the early starts, GPS for the miles ahead, and all your training at a glance. Your Garmin Forerunner 265 in Whitestone is already waiting for you.", shop: true },
   { c: 7, t: "Unbox your new watch and put it on!\nI hope you like it, I can't wait for your next marathon! Here's another letter.", letter: 'C' },
   {
     c: 8,
