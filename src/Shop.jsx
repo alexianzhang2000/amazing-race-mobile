@@ -1,84 +1,249 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { remember } from './keepsakes.js';
 
-const MOMENTS = [
-  { icon: '◉', title: 'Find your way', text: 'Built-in GPS is ready to track your runs, rides and adventures.' },
-  { icon: '↗', title: 'Make every run count', text: 'Training insights help you see how your effort adds up over time.' },
-  { icon: '☼', title: 'Check in with yourself', text: 'See useful health and recovery insights as part of your everyday routine.' },
+/* ---------- Watch faces (tap the watch to flip through them) ---------- */
+const FACES = [
+  { id: 'morning', cap: 'Morning Report', note: 'Wake up to your sleep, recovery and a suggested workout for the day.' },
+  { id: 'run', cap: 'Live run data', note: 'Pace, heart rate and distance on a bright AMOLED screen, even in full sun.' },
+  { id: 'ready', cap: 'Training Readiness', note: 'A daily score that tells you whether to push hard or take it easy.' },
+  { id: 'gps', cap: 'Multi-band GPS', note: 'Dual-frequency GPS keeps your route accurate between tall buildings and under trees.' },
+  { id: 'battery', cap: 'Body Battery', note: 'See how much energy you have left, based on sleep, stress and activity.' },
 ];
 
-function WatchIllustration() {
+function Ring({ pct, r = 40, w = 7, from = '#62dbcb', to = '#ffbf34', id }) {
+  const c = 2 * Math.PI * r;
   return (
-    <svg className="watch-art" viewBox="0 0 220 310" role="img" aria-label="Illustration of the Garmin Forerunner 265 Whitestone">
+    <svg className="ring" viewBox="0 0 100 100" aria-hidden="true">
       <defs>
-        <linearGradient id="watch-band" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#fff" />
-          <stop offset="1" stopColor="#dce1e5" />
-        </linearGradient>
-        <linearGradient id="watch-screen" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#132b46" />
-          <stop offset="1" stopColor="#07131f" />
-        </linearGradient>
-        <linearGradient id="watch-glow" x1="0" x2="1" y1="0" y2="1">
-          <stop offset="0" stopColor="#62dbcb" />
-          <stop offset="1" stopColor="#ffbf34" />
+        <linearGradient id={id} x1="0" x2="1" y1="0" y2="1">
+          <stop offset="0" stopColor={from} />
+          <stop offset="1" stopColor={to} />
         </linearGradient>
       </defs>
-      <path d="M79 4 Q110 -4 141 4 L153 92 L67 92 Z" fill="url(#watch-band)" stroke="#c6cdd3" strokeWidth="2" />
-      <path d="M67 218 L153 218 L141 306 Q110 314 79 306 Z" fill="url(#watch-band)" stroke="#c6cdd3" strokeWidth="2" />
-      <path d="M82 34h56M78 52h64M75 70h70M82 240h56M79 259h62M76 278h68" stroke="#c5ccd2" strokeWidth="3" strokeLinecap="round" opacity=".8" />
-      <circle cx="110" cy="155" r="78" fill="#d9dde1" />
-      <circle cx="110" cy="155" r="72" fill="#f7f8f8" stroke="#aab2b8" strokeWidth="3" />
-      <circle cx="110" cy="155" r="64" fill="url(#watch-screen)" />
-      <circle cx="110" cy="155" r="39" fill="none" stroke="#263c51" strokeWidth="7" />
-      <circle cx="110" cy="155" r="39" fill="none" stroke="url(#watch-glow)" strokeWidth="7" strokeLinecap="round" strokeDasharray="178 67" transform="rotate(-90 110 155)" />
-      <path d="M110 135v21l15 11" fill="none" stroke="#fff" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-      <text x="110" y="118" fill="#d9e7f2" fontSize="7" fontFamily="Arial, sans-serif" textAnchor="middle" letterSpacing="1">READY WHEN YOU ARE</text>
-      <text x="110" y="198" fill="#d9e7f2" fontSize="8" fontFamily="Arial, sans-serif" textAnchor="middle">RUN · MOVE · REPEAT</text>
-      <rect x="181" y="115" width="7" height="24" rx="3.5" fill="#aab2b8" />
-      <rect x="181" y="151" width="7" height="24" rx="3.5" fill="#aab2b8" />
+      <circle cx="50" cy="50" r={r} fill="none" stroke="rgba(255,255,255,.12)" strokeWidth={w} />
+      <circle
+        cx="50" cy="50" r={r} fill="none" stroke={`url(#${id})`} strokeWidth={w} strokeLinecap="round"
+        strokeDasharray={`${c * pct} ${c}`} transform="rotate(-90 50 50)" className="ring-fill"
+        style={{ '--len': c * pct, '--circ': c }}
+      />
     </svg>
   );
 }
 
+function Face({ id }) {
+  switch (id) {
+    case 'morning':
+      return (
+        <div className="face-in">
+          <small>Good morning</small>
+          <b className="big">6:12</b>
+          <div className="face-row"><span>Sleep 87</span><span>HRV ✓</span></div>
+        </div>
+      );
+    case 'run':
+      return (
+        <div className="face-in">
+          <small>Pace /km</small>
+          <b className="big">5:24</b>
+          <div className="face-row"><span>♥ 152</span><span>8.42 km</span></div>
+        </div>
+      );
+    case 'ready':
+      return (
+        <div className="face-in">
+          <Ring pct={0.82} id="g-ready" />
+          <div className="ring-label"><b>82</b><small>Prime</small></div>
+        </div>
+      );
+    case 'gps':
+      return (
+        <div className="face-in">
+          <svg viewBox="0 0 100 100" className="route" aria-hidden="true">
+            <path d="M18 74 C28 52 14 40 34 34 S58 52 62 30 S82 22 84 40" pathLength="1" />
+            <circle cx="84" cy="40" r="3.4" />
+          </svg>
+          <small className="gps-tag">GPS locked</small>
+        </div>
+      );
+    default:
+      return (
+        <div className="face-in">
+          <Ring pct={0.91} from="#93B21F" to="#62dbcb" id="g-batt" />
+          <div className="ring-label"><b>91</b><small>Battery</small></div>
+        </div>
+      );
+  }
+}
+
+/* ---------- Feature tabs ---------- */
+const TABS = [
+  {
+    key: 'run',
+    label: 'Run',
+    items: [
+      { icon: '◉', title: 'Multi-band GPS', text: 'Dual-frequency satellite tracking for a more accurate route in the city.' },
+      { icon: '↗', title: 'Race predictor', text: 'Estimates your 5K, 10K, half and marathon times from your training.' },
+      { icon: '≋', title: 'Running dynamics', text: 'Cadence, stride length and ground contact time, to run smoother.' },
+      { icon: '✦', title: 'Daily suggested workouts', text: 'Workouts picked for you each day, based on your recent training and recovery.' },
+    ],
+  },
+  {
+    key: 'recover',
+    label: 'Recover',
+    items: [
+      { icon: '☾', title: 'Sleep score & coach', text: 'Learn how well you slept and how much sleep your body needs tonight.' },
+      { icon: '♥', title: 'HRV status', text: 'Track your heart rate variability trend to see how your body is coping.' },
+      { icon: '⚡', title: 'Body Battery', text: 'A simple energy meter that shows when to go hard and when to rest.' },
+      { icon: '⏱', title: 'Recovery time', text: 'Know how long to wait before your next hard session.' },
+    ],
+  },
+  {
+    key: 'daily',
+    label: 'Every day',
+    items: [
+      { icon: '▣', title: 'AMOLED touchscreen', text: 'Bright, sharp and touch-friendly, with buttons for when your hands are sweaty.' },
+      { icon: '♪', title: 'Music on your wrist', text: 'Store songs on the watch and pair headphones to run without your phone.' },
+      { icon: '◈', title: 'Garmin Pay', text: 'Tap to pay on your wrist after a long run. No wallet needed.' },
+      { icon: '▮', title: 'Up to 13 days battery', text: 'Up to about 13 days in smartwatch mode, with GPS use shortening that.' },
+    ],
+  },
+];
+
+/* ---------- Finish-time toy ---------- */
+const DISTANCES = [
+  { label: '5K', km: 5 },
+  { label: '10K', km: 10 },
+  { label: 'Half', km: 21.0975 },
+  { label: 'Marathon', km: 42.195 },
+];
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+function hms(total) {
+  const t = Math.round(total);
+  const h = Math.floor(t / 3600), m = Math.floor((t % 3600) / 60), s = t % 60;
+  return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+}
+
 export default function Shop() {
+  const [face, setFace] = useState(0);
+  const [auto, setAuto] = useState(true);
+  const [tab, setTab] = useState(0);
+  const [dist, setDist] = useState(3);
+  const [pace, setPace] = useState(330); // seconds per km
+
   useEffect(() => { remember('watch', 'Garmin Forerunner 265 Whitestone'); }, []);
 
+  useEffect(() => {
+    if (!auto) return;
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const t = setInterval(() => setFace((f) => (f + 1) % FACES.length), 3200);
+    return () => clearInterval(t);
+  }, [auto]);
+
+  const f = FACES[face];
+  const d = DISTANCES[dist];
+
   return (
-    <section className="watch-showcase" aria-label="Your Garmin Forerunner 265 showcase">
-      <div className="watch-hero">
-        <div className="watch-orbit watch-orbit-one" aria-hidden="true" />
-        <div className="watch-orbit watch-orbit-two" aria-hidden="true" />
-        <span className="watch-spark watch-spark-one" aria-hidden="true">✦</span>
-        <span className="watch-spark watch-spark-two" aria-hidden="true">✧</span>
-        <WatchIllustration />
-        <div className="watch-stamp"><span>YOUR</span><b>265</b><span>IS WAITING</span></div>
+    <section className="ws" aria-label="Your Garmin Forerunner 265 showcase">
+      {/* ===== Stage ===== */}
+      <div className="ws-stage">
+        <div className="ws-beam" aria-hidden="true" />
+        <div className="ws-track" aria-hidden="true"><i /><i /><i /></div>
+
+        <button
+          type="button"
+          className="ws-watch"
+          aria-label={`Watch showing ${f.cap}. Tap to see the next screen.`}
+          onClick={() => { setAuto(false); setFace((x) => (x + 1) % FACES.length); }}
+        >
+          <span className="strap top" />
+          <span className="strap bot" />
+          <span className="case">
+            <span className="bezel">
+              <span className="screen" key={f.id}>
+                <Face id={f.id} />
+              </span>
+            </span>
+            <span className="btn-l a" /><span className="btn-l b" /><span className="btn-l c" />
+            <span className="btn-r a" /><span className="btn-r b" />
+          </span>
+        </button>
+
+        <div className="ws-stamp" aria-hidden="true"><span>Yours</span><b>265</b><span>Whitestone</span></div>
+
+        <div className="ws-caption" aria-live="polite">
+          <b>{f.cap}</b>
+          <p>{f.note}</p>
+          <div className="dots" role="tablist" aria-label="Watch screens">
+            {FACES.map((x, n) => (
+              <button
+                key={x.id} type="button" role="tab" aria-selected={n === face} aria-label={x.cap}
+                className={n === face ? 'on' : ''}
+                onClick={() => { setAuto(false); setFace(n); }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
 
-      <div className="watch-title">
-        <p className="watch-kicker">THE NEXT CHAPTER</p>
+      {/* ===== Headline ===== */}
+      <div className="ws-title">
         <h2>Forerunner 265</h2>
-        <p className="watch-finish">WHITESTONE · YOUR NEW RUNNING BUDDY</p>
+        <p>Your new running partner, in Whitestone.</p>
       </div>
 
-      <div className="watch-promise">
-        <span aria-hidden="true">✦</span>
-        <p>More than a watch. A little reminder of everything you're capable of.</p>
+      {/* ===== Quick stats ===== */}
+      <div className="ws-stats">
+        <div><b>1.3″</b><span>AMOLED display</span></div>
+        <div><b>2</b><span>GPS frequency bands</span></div>
+        <div><b>13</b><span>days smartwatch battery</span></div>
       </div>
 
-      <div className="watch-moments">
-        {MOMENTS.map((moment, index) => (
-          <article className="watch-moment" key={moment.title} style={{ '--moment-index': index }}>
-            <span className="watch-moment-icon" aria-hidden="true">{moment.icon}</span>
-            <div>
-              <h3>{moment.title}</h3>
-              <p>{moment.text}</p>
-            </div>
-          </article>
-        ))}
+      {/* ===== Feature explorer ===== */}
+      <div className="ws-explore">
+        <h3>What it can do</h3>
+        <div className="tabs" role="tablist">
+          {TABS.map((t, n) => (
+            <button key={t.key} type="button" role="tab" aria-selected={n === tab}
+              className={n === tab ? 'on' : ''} onClick={() => setTab(n)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <ul className="feat" key={TABS[tab].key}>
+          {TABS[tab].items.map((it, n) => (
+            <li key={it.title} style={{ '--n': n }}>
+              <span className="ic" aria-hidden="true">{it.icon}</span>
+              <div>
+                <h4>{it.title}</h4>
+                <p>{it.text}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </div>
 
-      <p className="watch-finale">Here’s to the miles, milestones and adventures still to come.</p>
+      {/* ===== Finish-time toy ===== */}
+      <div className="ws-predict">
+        <h3>Dream race, dream pace</h3>
+        <p className="sub">Slide to pick a pace and see your finish time. This is just for fun; the watch will predict the real one.</p>
+        <div className="chips" role="group" aria-label="Race distance">
+          {DISTANCES.map((x, n) => (
+            <button key={x.label} type="button" className={n === dist ? 'on' : ''} aria-pressed={n === dist} onClick={() => setDist(n)}>
+              {x.label}
+            </button>
+          ))}
+        </div>
+        <label className="pace">
+          <span>Pace <b>{mmss(pace)} /km</b></span>
+          <input type="range" min="240" max="450" step="5" value={pace} onChange={(e) => setPace(+e.target.value)} />
+        </label>
+        <div className="finish">
+          <span>{d.label} finish</span>
+          <b>{hms(d.km * pace)}</b>
+        </div>
+      </div>
+
+      <p className="ws-finale">Here’s to the miles, milestones and adventures still to come.</p>
     </section>
   );
 }
