@@ -108,8 +108,8 @@ export default function Credits() {
     photoCount && [photoCount, 'Photos taken'],
     [WORD.length, 'Letters collected'],
     m.songs?.length && [m.songs.length, 'Songs sung'],
-    m.puzzleMoves && [m.puzzleMoves, 'Puzzle moves'],
-    ['0', 'Strangers spoken to (allegedly)'],
+    [1, 'Garmin received'],
+    ["Many", "Memories made"],
   ].filter(Boolean);
 
   return (
@@ -150,7 +150,6 @@ export default function Credits() {
             {(reds.length > 0 || p.collage) && (
               <section className="cr-sec">
                 <p className="cr-kicker">Chinatown</p>
-                <h3 className="cr-scene">Nine reds, zero strangers</h3>
                 {reds.length > 0 && (
                   <div className="cr-grid">
                     {reds.map((src, k) => <img key={k} src={src} alt="" style={{ '--tilt': (k % 2 ? 2 : -2) + 'deg' }} />)}
