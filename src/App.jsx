@@ -43,6 +43,7 @@ export default function App() {
   const [fanShots, setFanShots] = useState({});   // her new photo, for steps that show it next to the old one
   const [shots, setShots] = useState({});   // per step: 'ok' once uploaded, 'fail' if it didn't save
   const [teaPreview, setTeaPreview] = useState('');
+  const [harbourPreview, setHarbourPreview] = useState('');
   const [ans, setAns] = useState('');
   const [tries, setTries] = useState(0);
   const [msg, setMsg] = useState({ text: '', kind: '' });
@@ -59,6 +60,12 @@ export default function App() {
       if (teaPreview) URL.revokeObjectURL(teaPreview);
     };
   }, [teaPreview]);
+
+  useEffect(() => {
+    return () => {
+      if (harbourPreview) URL.revokeObjectURL(harbourPreview);
+    };
+  }, [harbourPreview]);
 
   useEffect(() => () => {
     if (boothPhoto) URL.revokeObjectURL(boothPhoto);
@@ -107,6 +114,7 @@ export default function App() {
         setShots((p) => ({ ...p, [s.photo]: 'ok' }));
         if (s.photo === 'photobooth') setBoothPhoto(URL.createObjectURL(blob));
         if (s.photo === 'molly-tea') setTeaPreview(URL.createObjectURL(blob));
+        if (s.photo === 'wynyard-harbour-view') setHarbourPreview(URL.createObjectURL(blob));
         if (s.fan) {                                    // show it fanned out with the first-date photo
           setFanShots((p) => ({ ...p, [s.photo]: URL.createObjectURL(blob) }));
           mainRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -243,6 +251,11 @@ export default function App() {
                   {s.photo === 'molly-tea' && teaPreview && (
                     <div className="story-image-wrap">
                       <img className="story-image" src={teaPreview} alt="Uploaded photo of you both drinking Molly Tea" />
+                    </div>
+                  )}
+                  {s.photo === 'wynyard-harbour-view' && harbourPreview && (
+                    <div className="story-image-wrap">
+                      <img className="story-image" src={harbourPreview} alt="Uploaded photo of you at Wynyard Harbour" />
                     </div>
                   )}
                   <label className="btn alt pick">

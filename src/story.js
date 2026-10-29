@@ -55,9 +55,9 @@ export const S = [
   { c: 5, t: "Beautiful, here's your letter.", letter: 'A' },  
   { c: 6, h: "Hydration time!", t: "You must be tired, recharge with some delicious Molly Tea.\nYour order should be ready soon!" },
   { c: 6, t: "Take a photo of both of us drinking our Molly Tea and upload it here as proof.", photo: 'molly-tea' },
-  { c: 6, t: 'Check the cup sleeve or the bag. Another letter is hiding there.', letter: 'O' },
-  { c: 7, h: "What's the time?", t: "Time for a little preview of your birthday surprise..." },
-  { c: 7, t: "A bright screen for the early starts, GPS for the miles ahead, and all your training at a glance. Your Garmin Forerunner 265 in Whitestone is already waiting for you.", shop: true },
+  { c: 6, t: 'Cute! Have another letter.', letter: 'O' },
+  { c: 7, h: "What's the time?", t: "Time for a birthday gift!" },
+  { c: 7, h: "Garmin Forerunner 265", t: "A bright screen for the early starts, GPS for the miles ahead, and all your training at a glance. Your Garmin Forerunner 265 in Whitestone is already waiting for you.", shop: true },
   { c: 7, t: "Unbox your new watch and put it on!\nI hope you like it, I can't wait for your next marathon! Here's another letter.", letter: 'C' },
   {
     c: 8,
